@@ -1,6 +1,7 @@
 #include "../../include/Economy/Industry.hpp"
 #include <cmath>
 #include <stdexcept>
+#include <iostream>
 
 Industry::Industry(double productivity,
                    double productionCapacity,
@@ -12,12 +13,12 @@ Industry::Industry(double productivity,
     : productivity(productivity),
     productionCapacity(productionCapacity),
     numWorkers(numWorkers),
-    totalWages(totalWages),
+    wagePerWorker(wagePerWorker),
     constantCapitalCost(constantCapitalCost)
     {
     setNewWorkerPayDists(workerDistribution, payDistribution);
 }
-#include<iostream>
+
 void Industry::setNewWorkerPayDists(std::map<WorkerType, double> workerDistribution,
                                     std::map<WorkerType, double> payDistribution) {
     if (payDistribution.size() != workerDistribution.size()) {
@@ -34,7 +35,7 @@ void Industry::setNewWorkerPayDists(std::map<WorkerType, double> workerDistribut
                 throw std::invalid_argument("Mismatch between pay and worker distribution maps");
             }
         }
-        std::cout << paySum << ", "  << workerSum << ", " << std::abs(paySum - 1.0) << std::endl;
+
         if (std::abs(workerSum - 1.0) > 0.0001 || std::abs(paySum - 1.0) > 0.0001) {
             throw std::invalid_argument("ratios don't sum to 1");
         }
@@ -42,4 +43,26 @@ void Industry::setNewWorkerPayDists(std::map<WorkerType, double> workerDistribut
 
     this->payDistribution = payDistribution;
     this->workerDistribution = workerDistribution;
+}
+
+double Industry::getProduction() {
+    return productivity*numWorkers;
+}
+
+double Industry::getTotalWages() {
+    return wagePerWorker*numWorkers;
+}
+
+double Industry::getProfit() {
+    double production = getProduction();
+    double wages = getTotalWages();
+    std::cout << "Production i
+    return production - (wages + constantCapitalCost);
+}
+
+Industry Industry::testSetup() {
+    std::map<WorkerType, double> workerDistribution = { {HighSkilled, 0.2}, {Skilled, 0.4}, {Unskilled, 0.4} };
+    std::map<WorkerType, double> payDistribution = { {HighSkilled, 4.0/7}, {Skilled, 2.0/7}, {Unskilled, 1.0/7} };
+    Industry i(1, 39, 39, 0.65, 5, workerDistribution, payDistribution);
+    return i;
 }

@@ -1,7 +1,8 @@
 #include<iostream>
-#include "include/Economy/Industry.hpp"
+#include "include/Engine.hpp"
 
 int main() {
-    Industry i(0,0,0,0,0,{},{});
+    Engine e = Engine::testSetup();
+    e.playTurn();
     return 0;
 }

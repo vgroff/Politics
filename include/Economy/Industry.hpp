@@ -8,13 +8,12 @@ private:
     double productivity;
     double productionCapacity;
     double numWorkers;
-    double totalWages;
+    double wagePerWorker;
     double constantCapitalCost;
-    std::map<WorkerType, double> workerDistribution;
-    std::map<WorkerType, double> payDistribution;
+    std::map<WorkerType, double> workerDistribution = {};
+    std::map<WorkerType, double> payDistribution = {};
 
 public:
-    double getProduction();
     Industry(double productivity,
             double productionCapacity,
             double numWorkers,
@@ -22,6 +21,12 @@ public:
             double constantCapitalCost,
             std::map<WorkerType, double> workerDistribution,
             std::map<WorkerType, double> payDistribution);
+
     void setNewWorkerPayDists(std::map<WorkerType, double> workerDistribution,
                                std::map<WorkerType, double> payDistribution);
+    double getProduction();
+    double getTotalWages();
+    double getProfit();
+
+    static Industry testSetup();
 };
