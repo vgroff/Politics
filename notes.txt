@@ -1,0 +1,38 @@
+
+
+- First do a simple model with pie and labour+capital share. Everything is measured in production units
+    - Industry produces a certain amount of production units each turn. This is determined by productivity*labour 
+    - Some fixed amount goes to wages, some fixed amount goes to constant capital, the rest goes to profit
+    - The amount of production units that are spent on constant capital is determined by production capacity of the industry
+        - Production capacity is also measured in production units
+        - Under-investement in constant capital will cause production capacity to fall
+        - The amount of people that can be employed is a function of production capacity
+        - The constant capital cost is a function of production capacity (and employement) (and productivity?)
+    - If capital spends more than constant capital in an industry, that industry can grow either in production capacity or in productivity
+    - Somehow productivity is limited by the current research level, where research is it's own state-managed industry that eats up production units
+      but does not produce production units, instead produces research
+    - Need to work out the optimal local decisions to make:
+        - Industry Income = productivity * labour
+        - Profit = Income - Constant Capital - Wages
+        - An increase in production capacity by a gives:
+            - newProfit = a*Income - a*(Constant Capital + Wages) = a*currentProfit
+        - If this costs b, over (say) 5 years we have
+            - 5*a*currentProfit - b or currentProfit - b/5 yearly profit 
+            - which means yearly profit has changed (a-1)*currentProfit - b/5 
+        - Whereas an increase in productivity by a for an increase in constant capital by b gives:
+            - newProfit > oldProfit
+            - a*Income - b*ConstantCapital - Wages > Income - ConstantCapital - Wages
+            - a*Income - b*ConstantCapital > Income - ConstantCapital
+            - (a - 1)*Income > (b-1)*ConstantCapital
+            - IE the change in profit is (a-1)*Income - (b-1)*ConstantCapital
+        - If this costs c, then over say 5 years, we have
+            - a*Income - b*ConstantCapital - Wages - c/5 yearly average profit
+            - (a - 1)*Income - (b-1)*ConstantCapital - c/5 change in yearly average profit
+        - The question is now: what should b_cap and b_prod and c_prod be? 
+            - Probably b_cap should vary with ConstantCapital/Labour, and be high. 
+            - b_prod should probably be somewhat high, but vary with research
+            - c_prod should be relatively low, but perhaps also vary with research
+        - Capital will also need to know if there is manpower or goods shortages, as this will affect how they invest
+    - Production units are converted back into different needs following some utility hierarchy. Government can then
+    subsidies the cost of certain needs. Needs can be broken down into several levels and the utility can be completed step
+    by step, with a greedy algorithm making the best current choice

@@ -2,6 +2,6 @@
 #include "include/Economy/Industry.hpp"
 
 int main() {
-    std::cout << add(1,3) << std::endl;
+    Industry i(0,0,0,0,0,{},{});
     return 0;
 }
