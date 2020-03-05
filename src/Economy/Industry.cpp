@@ -6,7 +6,7 @@
 Industry::Industry(double productivity,
                    double productionCapacity,
                    double numWorkers,
-                   double totalWages,
+                   double wagePerWorker,
                    double constantCapitalCost,
                    std::map<WorkerType, double> workerDistribution,
                    std::map<WorkerType, double> payDistribution)
@@ -56,7 +56,7 @@ double Industry::getTotalWages() {
 double Industry::getProfit() {
     double production = getProduction();
     double wages = getTotalWages();
-    std::cout << "Production i
+    std::cout << production << ", " << wages << std::endl;
     return production - (wages + constantCapitalCost);
 }
 
