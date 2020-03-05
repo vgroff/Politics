@@ -3,6 +3,8 @@
 
 int main() {
     Engine e = Engine::testSetup();
-    e.playTurn();
+    for (int i = 0; i < 520; i++) {
+        e.playTurn();
+    }
     return 0;
 }

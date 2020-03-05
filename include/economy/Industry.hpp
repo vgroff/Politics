@@ -1,7 +1,7 @@
 #pragma once
 
 #include <map>
-#include "../Pop.hpp"
+#include "../electors/Elector.hpp"
 
 class Industry {
 private:
@@ -23,10 +23,11 @@ public:
             std::map<WorkerType, double> payDistribution);
 
     void setNewWorkerPayDists(std::map<WorkerType, double> workerDistribution,
-                               std::map<WorkerType, double> payDistribution);
+                              std::map<WorkerType, double> payDistribution);
     double getProduction();
     double getTotalWages();
     double getProfit();
+    std::map<WorkerType, double> getWages();
 
     static Industry testSetup();
 };

@@ -1,4 +1,4 @@
-#include "../../include/Economy/Industry.hpp"
+#include "../../include/economy/Industry.hpp"
 #include <cmath>
 #include <stdexcept>
 #include <iostream>
@@ -43,6 +43,30 @@ void Industry::setNewWorkerPayDists(std::map<WorkerType, double> workerDistribut
 
     this->payDistribution = payDistribution;
     this->workerDistribution = workerDistribution;
+}
+
+std::map<WorkerType, double> Industry::getWages() {
+
+    double sumPayRatios = 0;
+    for (const auto payPair : payDistribution) {
+        WorkerType workerType = payPair.first;
+        double pay = payPair.second;
+        double workers = workerDistribution.at(payPair.first);
+
+        sumPayRatios += pay * workers;
+    }
+
+    std::map<WorkerType, double> wages = {};
+    for (const auto payPair : payDistribution) {
+        WorkerType workerType = payPair.first;
+        double pay = payPair.second;
+        double workers = workerDistribution.at(payPair.first);
+
+        double payProportionForWorkerType = (pay*workers)/sumPayRatios;
+        double numWorkerTypeWorkers = (numWorkers*workers);
+        wages[workerType] = getTotalWages() * payProportionForWorkerType / numWorkerTypeWorkers;
+    }
+    return wages;
 }
 
 double Industry::getProduction() {

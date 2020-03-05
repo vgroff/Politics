@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Common/Date.hpp"
+#include "common/Date.hpp"
 #include "Nation.hpp"
 
 class Engine {
 private:
-    date currentDate;
+    time_point currentDate;
     Nation playerNation = Nation::testSetupSingleNation();
 public:
-    Engine(date startingDate);
+    Engine(time_point startingDate);
     void playTurn();
 
     static Engine testSetup();
