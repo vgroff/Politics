@@ -12,17 +12,24 @@ struct PopulationProperties {
     double workingPopulationRate;
 };
 
+struct ElectorProperties {
+    std::vector<std::shared_ptr<Elector>> electors;
+};
+
 class Nation {
 private:
     std::string name;
     PopulationProperties populationProps;
+    ElectorProperties electorProperties;
     Industry privateIndustry;
 
-    void growPopulation();
     double getWorkingPopulation();
     bool atFullEmployement();
+
+    void growPopulation();
+    void distributeJobsToElectors();
 public:
-    Nation(std::string name, PopulationProperties populationProperties, Industry privateIndustry);
+    Nation(std::string name, PopulationProperties populationProperties, ElectorProperties electorProperties, Industry privateIndustry);
     void runIndustryTurn();
 
     static Nation testSetupSingleNation();

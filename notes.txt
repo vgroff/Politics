@@ -16,7 +16,7 @@
         - Profit = Income - Constant Capital - Wages
         - An increase in production capacity by a gives:
             - newProfit = a*Income - a*(Constant Capital + Wages) = a*currentProfit
-        - If this costs b, over (say) 5 years we have
+        - If this costs b, over (say) 5 years we have 
             - 5*a*currentProfit - b or currentProfit - b/5 yearly profit 
             - which means yearly profit has changed (a-1)*currentProfit - b/5 
         - Whereas an increase in productivity by a for an increase in constant capital by b gives:

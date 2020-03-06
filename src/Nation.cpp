@@ -1,10 +1,11 @@
 #include "../include/Nation.hpp"
 #include "../include/electors/Utility.hpp"
 #include "../include/common/Date.hpp"
+#include "../include/common/Maths.hpp"
 #include<iostream>
 
-Nation::Nation(std::string name, PopulationProperties populationProperties, Industry privateIndustry)
-    : name(name), populationProps(populationProperties), privateIndustry(privateIndustry) {    
+Nation::Nation(std::string name, PopulationProperties populationProperties,  ElectorProperties electorProperties, Industry privateIndustry)
+    : name(name), populationProps(populationProperties), electorProperties(electorProperties), privateIndustry(privateIndustry) {    
 
 }
 
@@ -17,20 +18,35 @@ void Nation::runIndustryTurn() {
     }
     // Calculate wages
     std::map<WorkerType, double> wages = privateIndustry.getWages();
+    // Bind electors to their workplaces
+
     // Get utilty for each worker type (update the Pops)
+    std::cout << "Utilities: " << std::endl;
     for (std::pair<WorkerType, double> wagePair : wages) {
         double utility = getUtility(wagePair.second);
-        std::cout << "Utility for worker " << workerTypeToString(wagePair.first) << " " << utility << ", from wage " << wagePair.second << std::endl;
-        // TODO: Update the Pops happiness
+        for (auto& elector : electorProperties.electors) {
+            if (wagePair.first == elector->getWorkerType()) {
+                elector->setUtility(utility);
+                std::cout << workerTypeToString(elector->getWorkerType()) << "(" << utility << ", " << elector->getLongTermUtility() << ", " << elector->getShortTermUtility() << "), " << std::endl;
+            }
+        }
     }
+    std::cout << std::endl;
     // Calculate profit
     double privateProfit = privateIndustry.getProfit();
     std::cout << "Profit: " << privateProfit << std::endl;
 }
 
+void Nation::distributeJobsToElectors() {
+    std::map<WorkerType, double> workerDist = privateIndustry.getWorkerDistribution();
+    // - Algorithm should start with the most well educated people and fill in as many jobs as possible!
+    // Remember to apply the unemployement rate beforehand
+}
+
 void Nation::growPopulation() {
-    double growthRatePerTurn = populationProps.yearlyGrowthRate/(12.0/MONTHS_PER_TURN);
-    populationProps.population *= (1+growthRatePerTurn);
+    double scalingFactor = 1/(12.0/MONTHS_PER_TURN);
+    double growthRatePerTurn = std::pow(1+populationProps.yearlyGrowthRate, scalingFactor);
+    populationProps.population *= growthRatePerTurn;
     std::cout << "Population: " << populationProps.population << std::endl;
 }
 
@@ -46,14 +62,22 @@ bool Nation::atFullEmployement() {
 }
 
 Nation Nation::testSetupSingleNation() {
-    struct PopulationProperties props {
+    PopulationProperties props {
         .population = 60,
         .yearlyGrowthRate = 0.009,
         .baseUnemployementRate = 0.04,
         .workingPopulationRate = 0.65,
     };
+    auto electorsVec = Elector::generateTestElectors(15, 
+                                                {{HighSkilled, 0.25}, {Skilled, 0.5}, {Unskilled, 0.25}},
+                                                {{HighSkilled, 0.7}, {Skilled, 0.5}, {Unskilled, 0.3}});
+    ElectorProperties electors {
+        .electors = electorsVec,
+    };
+
     Nation nation("United Kingdom",
                   props,
+                  electors,
                   Industry::testSetup());
     return nation;
 }

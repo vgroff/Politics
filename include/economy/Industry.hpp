@@ -27,6 +27,8 @@ public:
     double getProduction();
     double getTotalWages();
     double getProfit();
+    double getNumWorkers();
+    std::map<WorkerType, double> getWorkerDistribution();
     std::map<WorkerType, double> getWages();
 
     static Industry testSetup();
