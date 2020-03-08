@@ -13,7 +13,9 @@ struct PopulationProperties {
 };
 
 struct ElectorProperties {
-    std::vector<std::shared_ptr<Elector>> electors;
+    std::vector<Elector> electors;
+    bool jobsDistributed = false;
+    std::map<WorkerEducation, double> workerEducation;
 };
 
 class Nation {
@@ -27,7 +29,10 @@ private:
     bool atFullEmployement();
 
     void growPopulation();
-    void distributeJobsToElectors();
+    std::map<WorkerEducation, std::map<WorkerType, double>> calculateJobDistribution();
+    double distributeJobs(std::map<WorkerEducation, std::map<WorkerType, double>>& actualJobDist,
+                          std::map<WorkerType, double> availableJobsDist,
+                          std::map<WorkerEducation, double> educationDist);
 public:
     Nation(std::string name, PopulationProperties populationProperties, ElectorProperties electorProperties, Industry privateIndustry);
     void runIndustryTurn();

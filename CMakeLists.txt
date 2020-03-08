@@ -16,3 +16,4 @@ list(APPEND PUBLIC_INCLUDES $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
 list(APPEND PUBLIC_INCLUDES $<INSTALL_INTERFACE:include>)
 target_include_directories(politics PUBLIC ${PUBLIC_INCLUDES})
 
+add_custom_target(run "./politics")

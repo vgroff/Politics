@@ -7,3 +7,4 @@ double weightedMovingAvg(double memoryWeight, double oldAverage, double newValue
     }
     return memoryWeight*oldAverage + (1 - memoryWeight)*newValue;
 }
+

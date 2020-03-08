@@ -4,7 +4,8 @@
 #include"../common/Date.hpp"
 
 enum WorkerType {
-    Unskilled = 0,
+    Unemployed = 0,
+    Unskilled,
     Skilled,
     HighSkilled,
     Capitalist // Forgive me
@@ -15,8 +16,12 @@ enum WorkerEducation {
     HighSchool,
     University
 };
+const WorkerEducation WORST_EDUCATION = School;
+const WorkerEducation BEST_EDUCATION = University;
 
 std::string workerTypeToString(WorkerType workerType);
+std::string workerEducationToString(WorkerEducation workerEducation);
+
 void throwIfInconsistent(const std::map<WorkerType, double>& workerDistribution,
                         const std::map<WorkerType, double>& payDistribution,
                         double sumsToOne1 = true,
@@ -29,7 +34,7 @@ private:
     double currentUtility;
     double shortTermUtility;
     double longTermUtility;
-    WorkerType workerType;
+    WorkerType workerType = Unemployed;
     WorkerEducation workerEducation;
 public:
     double setUtility(double newUtility);
@@ -37,10 +42,13 @@ public:
     double getShortTermUtility();
     double getLongTermUtility();
     WorkerType getWorkerType();
+    WorkerType setWorkerType();
     bool canWorkJob(WorkerType jobType);
-    Elector(WorkerType workerType, WorkerEducation workerEducation, double longTermUtility);
+    Elector(WorkerEducation workerEducation, double longTermUtility);
 
-    static std::vector<std::shared_ptr<Elector>> generateTestElectors(int numElectors,
-                                                    std::map<WorkerType, double> distribution,
-                                                    std::map<WorkerType, double> utilityDistribution);
+    static bool canWorkJob(WorkerEducation workerEducation, WorkerType workerType);
+
+    static std::vector<Elector> generateTestElectors(int numElectors,
+                                                    std::map<WorkerEducation, double> distribution,
+                                                    std::map<WorkerEducation, double> utilityDistribution);
 };

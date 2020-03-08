@@ -6,7 +6,9 @@
 
 Nation::Nation(std::string name, PopulationProperties populationProperties,  ElectorProperties electorProperties, Industry privateIndustry)
     : name(name), populationProps(populationProperties), electorProperties(electorProperties), privateIndustry(privateIndustry) {    
-
+    if (sumsToOne(electorProperties.workerEducation) == false) {
+        throw std::invalid_argument("Worker education does not sum to one");
+    }
 }
 
 void Nation::runIndustryTurn() {
@@ -16,18 +18,18 @@ void Nation::runIndustryTurn() {
     if (atFullEmployement() == false) {
         // TODO: try to increase employement if production capacity is available
     }
+    std::map<WorkerEducation, std::map<WorkerType, double>> jobDist = calculateJobDistribution();
     // Calculate wages
     std::map<WorkerType, double> wages = privateIndustry.getWages();
-    // Bind electors to their workplaces
 
     // Get utilty for each worker type (update the Pops)
     std::cout << "Utilities: " << std::endl;
     for (std::pair<WorkerType, double> wagePair : wages) {
         double utility = getUtility(wagePair.second);
         for (auto& elector : electorProperties.electors) {
-            if (wagePair.first == elector->getWorkerType()) {
-                elector->setUtility(utility);
-                std::cout << workerTypeToString(elector->getWorkerType()) << "(" << utility << ", " << elector->getLongTermUtility() << ", " << elector->getShortTermUtility() << "), " << std::endl;
+            if (wagePair.first == elector.getWorkerType()) {
+                elector.setUtility(utility);
+                std::cout << workerTypeToString(elector.getWorkerType()) << "(" << utility << ", " << elector.getLongTermUtility() << ", " << elector.getShortTermUtility() << "), " << std::endl;
             }
         }
     }
@@ -37,10 +39,125 @@ void Nation::runIndustryTurn() {
     std::cout << "Profit: " << privateProfit << std::endl;
 }
 
-void Nation::distributeJobsToElectors() {
-    std::map<WorkerType, double> workerDist = privateIndustry.getWorkerDistribution();
-    // - Algorithm should start with the most well educated people and fill in as many jobs as possible!
-    // Remember to apply the unemployement rate beforehand
+
+std::map<WorkerEducation, std::map<WorkerType, double>> Nation::calculateJobDistribution() {
+    std::map<WorkerType, double> theoreticalJobDist = privateIndustry.getWorkerDistribution();
+    std::map<WorkerEducation, double> educationDist = electorProperties.workerEducation;
+    double workingRate = populationProps.workingPopulationRate;
+    double workingPopulation = workingRate*populationProps.population;
+    double baseUnemployement = populationProps.baseUnemployementRate;
+
+    if (privateIndustry.getNumJobs() / workingPopulation < 1) {
+        // If we dont have enough jobs for everyone we need to scale down the calculation
+        for (auto& jobPair : theoreticalJobDist) {
+            // Modify by population size
+            jobPair.second *= privateIndustry.getNumJobs() / workingPopulation;
+        }
+    } // If there are too many jobs, that will be dealt with by the minium ratio
+    
+    for (auto& educationPair : educationDist) {
+        // Apply unemployement effect (applied flatly to all educations)
+        // TODO: Make this more intelligent
+        educationPair.second = (1 - baseUnemployement)*educationPair.second;
+    }
+    std::map<WorkerEducation, std::map<WorkerType, double>> testJobDist = {{WORST_EDUCATION, {}}};
+    WorkerEducation currentEducation = WORST_EDUCATION;
+    while (currentEducation < BEST_EDUCATION) {
+        currentEducation = (WorkerEducation) (currentEducation + 1);
+        testJobDist[currentEducation] = {};
+    }
+    double minJobFilledRatio = distributeJobs(testJobDist, theoreticalJobDist, educationDist);
+    // Set the amount of workers
+    if (workingPopulation / privateIndustry.getNumJobs() < 1) {
+        privateIndusty.setNumWorkers(workingPopulation);
+    } else {
+        privateIndustry.setNumWorkers(minJobFilledRatio*privateIndustry.getNumJobs());
+    }
+    std::map<WorkerEducation, std::map<WorkerType, double>> actualJobDist;
+    if (minJobFilledRatio < 0.99) {
+        WorkerEducation currentEducation = WORST_EDUCATION;
+        while (currentEducation < BEST_EDUCATION) {
+            currentEducation = (WorkerEducation) (currentEducation + 1);
+            actualJobDist[currentEducation] = {};
+        }
+        // If not all jobs were filled, we need to decrease to job number
+        for (auto& jobPair : theoreticalJobDist) {
+            // Modify by population size
+            jobPair.second *= minJobFilledRatio;
+        }
+        minJobFilledRatio = distributeJobs(actualJobDist, theoreticalJobDist, educationDist);
+    } else {
+        actualJobDist = testJobDist;
+    }
+    if (std::abs(minJobFilledRatio - 1) > 0.001) {
+        throw std::logic_error("Min ratio of jobs filled is not 1");
+    }
+
+    // Normalise the values in workerDist to get a probability distribution out
+    for (auto& workerJobDist : actualJobDist) {
+        double sum = 0;
+        for (auto& workerPair: workerJobDist.second) {
+            std::cout << workerEducationToString(workerJobDist.first) << ", " << workerTypeToString(workerPair.first) << ", " << workerPair.second << std::endl;
+            sum += workerPair.second;
+        }
+        double diff = electorProperties.workerEducation.at(workerJobDist.first) - sum;
+        if (diff > 0.0001) {
+            // If there are workers left over, the rest are unemployed
+            workerJobDist.second[Unemployed] += diff;
+        } else if (diff < 0.0001) {
+            std::logic_error("More jobs given to workers than workers actually exist");
+        }
+        for (auto& workerPair: workerJobDist.second) {
+            workerPair.second = workerPair.second / electorProperties.workerEducation.at(workerJobDist.first);
+            std::cout << workerEducationToString(workerJobDist.first) << ", " << workerTypeToString(workerPair.first) << ", " << workerPair.second << std::endl;
+        }
+    }
+    return actualJobDist;
+}
+
+// Distribute available jobs amongst educations. Actual job dist is the output, along with the minimum ratio of jobs filled (due to lack of education)
+double Nation::distributeJobs(std::map<WorkerEducation, std::map<WorkerType, double>>& actualJobDist,
+                              std::map<WorkerType, double> availableJobsDist,
+                              std::map<WorkerEducation, double> educationDist) {
+    WorkerEducation currentEducation = BEST_EDUCATION;
+    std::map<WorkerType, double> jobsFilled;
+    double minRatio = 1;
+    bool outOfWorkers = false;
+    bool outOfJobs = false;
+    for (auto it = availableJobsDist.rbegin(); it != availableJobsDist.rend(); it++) {
+        // Distribute jobs in order of skill
+        WorkerType job = it->first;
+        double numJobs = it->second;
+        while (true) {
+            if (Elector::canWorkJob(currentEducation, job)) {
+                double numWorkersLeft = educationDist.at(currentEducation);
+                if (numJobs > numWorkersLeft) {
+                    actualJobDist[currentEducation][job] += numWorkersLeft;
+                    educationDist[currentEducation] -= numWorkersLeft;
+                    jobsFilled[job] += numWorkersLeft;
+                    numJobs -= numWorkersLeft;
+                } else if (numJobs <= numWorkersLeft) {
+                    actualJobDist[currentEducation][job] += numJobs;
+                    educationDist[currentEducation] -= numJobs;
+                    jobsFilled[job] += numJobs;
+                    break;
+                }
+            } else {
+                outOfWorkers = true;
+                double ratio = jobsFilled[job] / availableJobsDist[job];
+                if (ratio < minRatio) {
+                    minRatio = ratio;
+                }
+                break;
+            }
+
+            if (currentEducation == WORST_EDUCATION) {
+                break;
+            }
+            currentEducation = (WorkerEducation) (currentEducation - 1);
+        }
+    }
+    return minRatio;
 }
 
 void Nation::growPopulation() {
@@ -68,11 +185,13 @@ Nation Nation::testSetupSingleNation() {
         .baseUnemployementRate = 0.04,
         .workingPopulationRate = 0.65,
     };
+    std::map<WorkerEducation, double> workerEducationVec = {{University, 0.25}, {HighSchool, 0.5}, {School, 0.25}};
     auto electorsVec = Elector::generateTestElectors(15, 
-                                                {{HighSkilled, 0.25}, {Skilled, 0.5}, {Unskilled, 0.25}},
-                                                {{HighSkilled, 0.7}, {Skilled, 0.5}, {Unskilled, 0.3}});
+                                                workerEducationVec,
+                                                {{University, 0.7}, {HighSchool, 0.5}, {School, 0.3}});
     ElectorProperties electors {
         .electors = electorsVec,
+        .workerEducation = workerEducationVec,
     };
 
     Nation nation("United Kingdom",

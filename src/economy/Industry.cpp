@@ -1,4 +1,5 @@
 #include "../../include/economy/Industry.hpp"
+#include "../../include/common/Maths.hpp"
 #include <cmath>
 #include <stdexcept>
 #include <iostream>
@@ -23,7 +24,7 @@ void Industry::setNewWorkerPayDists(std::map<WorkerType, double> workerDistribut
                                     std::map<WorkerType, double> payDistribution) {
 
     if (workerDistribution.size() > 0) {
-        throwIfInconsistent(workerDistribution, payDistribution);
+        throwIfInconsistent(workerDistribution, payDistribution, true, true);
     }
 
     this->payDistribution = payDistribution;
@@ -54,6 +55,13 @@ std::map<WorkerType, double> Industry::getWages() {
     return wages;
 }
 
+void Industry::setNumWorkers(double numWorkers) {
+    if (numWorkers > getNumJobs()) {
+        throw(std::invalid_argument("Industry can not support this many workers"));
+    }
+    numWorkers = numWorkers;
+}
+
 double Industry::getNumWorkers() {
     return numWorkers;
 }
@@ -66,7 +74,15 @@ double Industry::getTotalWages() {
     return wagePerWorker*numWorkers;
 }
 
-std::map<WorkerType, double> getWorkerDistribution() {
+double Industry::getProductionCapacity() {
+    return productionCapacity;
+}
+
+double Industry::getNumJobs() {
+    return productionCapacity;
+}
+
+std::map<WorkerType, double> Industry::getWorkerDistribution() {
     return workerDistribution;
 }
 
@@ -80,6 +96,6 @@ double Industry::getProfit() {
 Industry Industry::testSetup() {
     std::map<WorkerType, double> workerDistribution = { {HighSkilled, 0.2}, {Skilled, 0.4}, {Unskilled, 0.4} };
     std::map<WorkerType, double> payDistribution = { {HighSkilled, 5.0/8}, {Skilled, 2.0/8}, {Unskilled, 1.0/8} };
-    Industry i(1, 39, 39, 0.65, 5, workerDistribution, payDistribution);
+    Industry i(1, 50, 50, 0.65, 5, workerDistribution, payDistribution);
     return i;
 }
