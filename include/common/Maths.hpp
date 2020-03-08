@@ -44,7 +44,6 @@ bool sumsToOne(std::vector<std::pair<A, double>> dist) {
     for (const auto distPair : dist) {
         sumDist += distPair.second;
     }
-    std::cout << sumDist << std::endl;
     if (std::abs(sumDist - 1) < 0.00001) {
         return true;
     }
@@ -57,7 +56,6 @@ bool sumsToOne(std::map<A, double> dist) {
     for (const auto distPair : dist) {
         sumDist += distPair.second;
     }
-    std::cout << sumDist << std::endl;
     if (std::abs(sumDist - 1) < 0.00001) {
         return true;
     }
@@ -67,7 +65,7 @@ bool sumsToOne(std::map<A, double> dist) {
 
 template<typename A>
 A coinFlip(const std::map<A, double>& probabilityDist) {
-    sumToOne(probabilityDist);
+    sumsToOne(probabilityDist);
     double rand = random0to1();
     double val = 0;
     for (const auto& probDist : probabilityDist) {

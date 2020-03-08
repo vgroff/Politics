@@ -42,6 +42,7 @@ public:
     double getShortTermUtility();
     double getLongTermUtility();
     WorkerType getWorkerType();
+    WorkerEducation getWorkerEducation();
     void setWorkerType(WorkerType workerType);
     bool canWorkJob(WorkerType jobType);
     Elector(WorkerEducation workerEducation, double longTermUtility);

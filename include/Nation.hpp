@@ -14,9 +14,9 @@ struct PopulationProperties {
 
 struct ElectorProperties {
     std::vector<Elector> electors;
-    bool jobsDistributed = false;
-    const double chanceJobRedistributed = 0.15*MONTHS_PER_TURN;
     std::map<WorkerEducation, double> workerEducation;
+    bool jobsDistributed;
+    const double chanceJobRedistributed;
 };
 
 class Nation {

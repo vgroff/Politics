@@ -6,14 +6,12 @@
 
 Industry::Industry(double productivity,
                    double productionCapacity,
-                   double numWorkers,
                    double wagePerWorker,
                    double constantCapitalCost,
                    std::map<WorkerType, double> workerDistribution,
                    std::map<WorkerType, double> payDistribution)
     : productivity(productivity),
     productionCapacity(productionCapacity),
-    numWorkers(numWorkers),
     wagePerWorker(wagePerWorker),
     constantCapitalCost(constantCapitalCost)
     {
@@ -96,6 +94,6 @@ double Industry::getProfit() {
 Industry Industry::testSetup() {
     std::map<WorkerType, double> workerDistribution = { {HighSkilled, 0.2}, {Skilled, 0.4}, {Unskilled, 0.4} };
     std::map<WorkerType, double> payDistribution = { {HighSkilled, 5.0/8}, {Skilled, 2.0/8}, {Unskilled, 1.0/8} };
-    Industry i(1, 50, 50, 0.65, 5, workerDistribution, payDistribution);
+    Industry i(1, 50, 0.65, 5, workerDistribution, payDistribution);
     return i;
 }

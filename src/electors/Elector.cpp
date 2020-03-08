@@ -1,5 +1,6 @@
 #include "../../include/electors/Elector.hpp"
 #include "../../include/common/Maths.hpp"
+#include<iostream>
 
 std::string workerTypeToString(WorkerType workerType) {
     if (workerType == Unemployed) {
@@ -26,10 +27,10 @@ std::string workerEducationToString(WorkerEducation workerEducation) {
 }
 
 
-Elector::Elector(WorkerEducation workerEducation, double longTermtility) 
+Elector::Elector(WorkerEducation workerEducation, double longTermUtility) 
     : longTermUtility(longTermUtility), 
-    shortTermUtility(shortTermUtility), 
-    currentUtility(currentUtility),
+    shortTermUtility(longTermUtility), 
+    currentUtility(longTermUtility),
     workerEducation(workerEducation) {
 
 };
@@ -82,16 +83,9 @@ std::vector<Elector> Elector::generateTestElectors(int numElectors,
     throwIfInconsistent(distribution, utilityDistribution, true, false);
     std::vector<Elector> electors;
     for (int i = 0; i < numElectors; i++) {
-        double coinFlip = random0to1();
-        double currentSum = 0;
-        for (const auto distPair : distribution) {
-            currentSum += distPair.second;
-            if (currentSum > coinFlip) {
-                Elector e(distPair.first, utilityDistribution.at(distPair.first));
-                electors.push_back(e);
-                break;
-            }
-        }
+        WorkerEducation education = coinFlip(distribution);
+        Elector e(education, utilityDistribution.at(education));
+        electors.push_back(e);
     }
     return electors;
 }

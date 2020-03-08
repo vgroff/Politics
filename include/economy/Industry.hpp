@@ -16,7 +16,6 @@ private:
 public:
     Industry(double productivity,
             double productionCapacity,
-            double numWorkers,
             double wagePerWorker,
             double constantCapitalCost,
             std::map<WorkerType, double> workerDistribution,

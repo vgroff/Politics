@@ -20,15 +20,17 @@ void Nation::runIndustryTurn() {
     }
     std::map<WorkerEducation, std::map<WorkerType, double>> jobDist = calculateJobDistribution();
     double chanceJobRedistributed = 1;
-    if (electorProperties.jobsDistributed == false) {
+    if (electorProperties.jobsDistributed == true) {
         chanceJobRedistributed = electorProperties.chanceJobRedistributed;
+        electorProperties.jobsDistributed = true;
     }
     for (size_t i = 0; i < electorProperties.electors.size(); i++) {
         if (coinFlip(chanceJobRedistributed)) {
             auto jobDistPair = jobDist.find(electorProperties.electors[i].getWorkerEducation());
             if (jobDistPair != jobDist.end()) {
-                auto job = coinFlip(jobDistPair.second);
+                auto job = coinFlip(jobDistPair->second);
                 electorProperties.electors[i].setWorkerType(job);
+                std::cout << "Job is now " << workerTypeToString(job) << std::endl;;
             } else {
                 electorProperties.electors[i].setWorkerType(Unemployed);
             }
@@ -84,7 +86,7 @@ std::map<WorkerEducation, std::map<WorkerType, double>> Nation::calculateJobDist
     double minJobFilledRatio = distributeJobs(testJobDist, theoreticalJobDist, educationDist);
     // Set the amount of workers
     if (workingPopulation / privateIndustry.getNumJobs() < 1) {
-        privateIndusty.setNumWorkers(workingPopulation);
+        privateIndustry.setNumWorkers(workingPopulation);
     } else {
         privateIndustry.setNumWorkers(minJobFilledRatio*privateIndustry.getNumJobs());
     }
@@ -200,13 +202,15 @@ Nation Nation::testSetupSingleNation() {
         .baseUnemployementRate = 0.04,
         .workingPopulationRate = 0.65,
     };
-    std::map<WorkerEducation, double> workerEducationVec = {{University, 0.25}, {HighSchool, 0.5}, {School, 0.25}};
+    std::map<WorkerEducation, double> workerEducationMap = {{University, 0.25}, {HighSchool, 0.5}, {School, 0.25}};
     auto electorsVec = Elector::generateTestElectors(15, 
-                                                workerEducationVec,
+                                                workerEducationMap,
                                                 {{University, 0.7}, {HighSchool, 0.5}, {School, 0.3}});
     ElectorProperties electors {
         .electors = electorsVec,
-        .workerEducation = workerEducationVec,
+        .workerEducation = workerEducationMap,
+        .jobsDistributed = false,
+        .chanceJobRedistributed = 0.15*MONTHS_PER_TURN,
     };
 
     Nation nation("United Kingdom",
