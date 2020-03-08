@@ -28,7 +28,7 @@ public:
     double getTotalWages();
     double getProfit();
     double getNumWorkers();
-    void setNumWorkers(double numWorkers);
+    void setNumWorkers(double nWorkers);
     double getProductionCapacity();
     double getNumJobs();
     std::map<WorkerType, double> getWorkerDistribution();

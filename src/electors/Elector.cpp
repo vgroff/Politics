@@ -36,8 +36,8 @@ Elector::Elector(WorkerEducation workerEducation, double longTermtility)
 
 double Elector::setUtility(double newUtility) {
     currentUtility = newUtility;
-    shortTermUtility = weightedMovingAvg(shortTermMultiplier, shortTermUtility, newUtility);
-    longTermUtility  = weightedMovingAvg(longTermMultiplier, longTermUtility, newUtility);
+    shortTermUtility = weightedMovingAvg(1 - shortTermMultiplier, shortTermUtility, newUtility);
+    longTermUtility  = weightedMovingAvg(1 - longTermMultiplier, longTermUtility, newUtility);
 }
 
 double Elector::getLongTermUtility() {
@@ -48,8 +48,16 @@ double Elector::getShortTermUtility() {
     return shortTermUtility;
 }
 
+WorkerEducation Elector::getWorkerEducation() {
+    return workerEducation;
+}
+
 WorkerType Elector::getWorkerType() {
     return workerType;
+}
+
+void Elector::setWorkerType(WorkerType newWorkerType) {
+    workerType = newWorkerType;
 }
 
 bool Elector::canWorkJob(WorkerType job) {
@@ -74,7 +82,7 @@ std::vector<Elector> Elector::generateTestElectors(int numElectors,
     throwIfInconsistent(distribution, utilityDistribution, true, false);
     std::vector<Elector> electors;
     for (int i = 0; i < numElectors; i++) {
-        double coinFlip = (double)std::rand()/RAND_MAX;
+        double coinFlip = random0to1();
         double currentSum = 0;
         for (const auto distPair : distribution) {
             currentSum += distPair.second;

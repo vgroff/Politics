@@ -6,6 +6,8 @@
 #include<iostream>
 
 double weightedMovingAvg(double memoryWeight, double oldAverage, double newValue);
+bool coinFlip(double prob);
+double random0to1();
 
 template<typename A>
 void throwIfInconsistent(const std::map<A, double>& dist1,
@@ -60,4 +62,18 @@ bool sumsToOne(std::map<A, double> dist) {
         return true;
     }
     return false;
+}
+
+
+template<typename A>
+A coinFlip(const std::map<A, double>& probabilityDist) {
+    sumToOne(probabilityDist);
+    double rand = random0to1();
+    double val = 0;
+    for (const auto& probDist : probabilityDist) {
+        val += probDist.second;
+        if (val >= rand) {
+            return probDist.first;
+        }
+    }
 }

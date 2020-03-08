@@ -55,11 +55,11 @@ std::map<WorkerType, double> Industry::getWages() {
     return wages;
 }
 
-void Industry::setNumWorkers(double numWorkers) {
-    if (numWorkers > getNumJobs()) {
+void Industry::setNumWorkers(double nWorkers) {
+    if (nWorkers > getNumJobs()) {
         throw(std::invalid_argument("Industry can not support this many workers"));
     }
-    numWorkers = numWorkers;
+    numWorkers = nWorkers;
 }
 
 double Industry::getNumWorkers() {

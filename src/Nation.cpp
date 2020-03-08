@@ -19,6 +19,21 @@ void Nation::runIndustryTurn() {
         // TODO: try to increase employement if production capacity is available
     }
     std::map<WorkerEducation, std::map<WorkerType, double>> jobDist = calculateJobDistribution();
+    double chanceJobRedistributed = 1;
+    if (electorProperties.jobsDistributed == false) {
+        chanceJobRedistributed = electorProperties.chanceJobRedistributed;
+    }
+    for (size_t i = 0; i < electorProperties.electors.size(); i++) {
+        if (coinFlip(chanceJobRedistributed)) {
+            auto jobDistPair = jobDist.find(electorProperties.electors[i].getWorkerEducation());
+            if (jobDistPair != jobDist.end()) {
+                auto job = coinFlip(jobDistPair.second);
+                electorProperties.electors[i].setWorkerType(job);
+            } else {
+                electorProperties.electors[i].setWorkerType(Unemployed);
+            }
+        }
+    }
     // Calculate wages
     std::map<WorkerType, double> wages = privateIndustry.getWages();
 
