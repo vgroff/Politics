@@ -4,8 +4,16 @@
 #include "../include/common/Maths.hpp"
 #include<iostream>
 
-Nation::Nation(std::string name, PopulationProperties populationProperties,  ElectorProperties electorProperties, Industry privateIndustry)
-    : name(name), populationProps(populationProperties), electorProperties(electorProperties), privateIndustry(privateIndustry) {    
+Nation::Nation(std::string name, 
+               PopulationProperties populationProperties,
+               ElectorProperties electorProperties, 
+               CapitalistProperties capitalistProps, 
+               Industry privateIndustry)
+    : name(name), 
+    populationProps(populationProperties), 
+    electorProperties(electorProperties), 
+    capitalistProps(capitalistProps),
+    privateIndustry(privateIndustry) {    
     if (sumsToOne(electorProperties.workerEducation) == false) {
         throw std::invalid_argument("Worker education does not sum to one");
     }
@@ -31,7 +39,7 @@ void Nation::runIndustryTurn() {
         for (auto& elector : electorProperties.electors) {
             if (wagePair.first == elector.getWorkerType()) {
                 elector.setUtility(utility);
-                std::cout << workerTypeToString(elector.getWorkerType()) << " " << workerEducationToString(elector.getWorkerEducation())
+                std::cout << workerTypeToString(elector.getWorkerType()) << " " << workerEducationToString(elector.getWorkerEducation()) << " " << wagePair.second
                 << ", " << "(" << utility << ", " << elector.getLongTermUtility() << ", " << elector.getShortTermUtility() << "), " << std::endl;
             }
         }
@@ -40,6 +48,33 @@ void Nation::runIndustryTurn() {
     // Calculate profit
     double privateProfit = privateIndustry.getProfit();
     std::cout << "Profit: " << privateProfit << std::endl;
+    double costOfLiving = capitalistProps.numCapitalists*inverseUtility(capitalistProps.minUtility);
+    std::cout << "CostOfLiving: " << costOfLiving << std::endl;
+    if (costOfLiving < privateProfit) {
+        double investement = privateProfit - costOfLiving;
+        Industry i = privateIndustry.theoreticalProductivityInvestement(investement);
+        Industry i2 = privateIndustry.theoreticalProductionCapacityInvestement(investement);
+
+        double newProfit1 = i.getProfit();
+        double newProfit2 = 0;
+        bool industryFullyEmployed = 1.00001*privateIndustry.getNumWorkers() => privateIndustry.getProductionCapacity(); 
+        bool populationFullyEmployed = 1.00001*privateIndustry.getNumWorkers() => getEmployablePopulation();
+        if (industryFullyEmployed && populationFullyEmployed) {
+            i2.setNumWorkers(i2.getProductionCapacity());
+            newProfit2 = i2.getProfit();
+        }
+        double changeInProfit1 = newProfit1 - privateProfit;
+        double changeInProfit2 = newProfit2 - privateProfit;
+        if (changeInProfit1 > 0 || changeInProfit2 > 0) {
+            if (newProfit1 > newProfit2) {
+
+            } else {
+
+            }
+        }
+
+        // Check if num workers is equal to production capacity before re-investing
+    }
 }
 
 void Nation::distributeJobsToElectors(std::map<WorkerEducation, std::map<WorkerType, double>> jobDist) {
@@ -67,7 +102,7 @@ std::map<WorkerEducation, std::map<WorkerType, double>> Nation::calculateJobDist
     std::map<WorkerType, double> theoreticalJobDist = privateIndustry.getWorkerDistribution();
     std::map<WorkerEducation, double> educationDist = electorProperties.workerEducation;
     double workingRate = populationProps.workingPopulationRate;
-    double workingPopulation = workingRate*populationProps.population;
+    double workingPopulation = getWorkingPopulation();
     double baseUnemployement = populationProps.baseUnemployementRate;
 
     if (privateIndustry.getNumJobs() / workingPopulation < 1) {
@@ -192,6 +227,10 @@ double Nation::getWorkingPopulation() {
     return populationProps.population*populationProps.workingPopulationRate;
 }
 
+double Nation::getEmployablePopulation() {
+    return populationProps.population*populationProps.workingPopulationRate*(1-populationProps.baseUnemployementRate);
+}
+
 bool Nation::atFullEmployement() {
     if (getWorkingPopulation() >= populationProps.baseUnemployementRate*populationProps.population) {
         return true;
@@ -216,10 +255,15 @@ Nation Nation::testSetupSingleNation() {
         .jobsDistributed = false,
         .chanceJobRedistributed = 0.15*MONTHS_PER_TURN,
     };
+    CapitalistProperties capitalistProps {
+        .numCapitalists = 0.3,
+        .minUtility = 0.8
+    };
 
     Nation nation("United Kingdom",
                   props,
                   electors,
+                  capitalistProps,
                   Industry::testSetup());
     return nation;
 }

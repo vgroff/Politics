@@ -7,13 +7,11 @@
 Industry::Industry(double productivity,
                    double productionCapacity,
                    double wagePerWorker,
-                   double constantCapitalCost,
                    std::map<WorkerType, double> workerDistribution,
                    std::map<WorkerType, double> payDistribution)
     : productivity(productivity),
     productionCapacity(productionCapacity),
-    wagePerWorker(wagePerWorker),
-    constantCapitalCost(constantCapitalCost)
+    wagePerWorker(wagePerWorker)
     {
     setNewWorkerPayDists(workerDistribution, payDistribution);
 }
@@ -65,32 +63,59 @@ double Industry::getNumWorkers() {
 }
 
 double Industry::getProduction() {
-    return productivity*numWorkers;
+    return Industry::getProduction(productivity, numWorkers);
 }
 
 double Industry::getTotalWages() {
-    return wagePerWorker*numWorkers;
+    return Industry::getTotalWages(wagePerWorker, numWorkers);
 }
 
 double Industry::getProductionCapacity() {
     return productionCapacity;
 }
 
+double Industry::getProductivity() {
+    return productivity;
+}
+
 double Industry::getNumJobs() {
     return productionCapacity;
 }
 
-std::pair<double, double> Industry::getTheoreticalProductivityAndConstantCapital(double investement) {
+double Industry::getWagePerWorker() {
+    return wagePerWorker;
+}
+
+double Industry::getProductivityToConstantCapital() {
+    return productivityToConstantCapital;
+}
+
+double Industry::getConstantCapital() {
+    return productivity*numWorkers*productivityToConstantCapital;
+}
+
+void Industry::setCurrentTechnology(double newTech) {
+    currentTechnology = newTech;
+} 
+
+Industry Industry::theoreticalProductivityInvestement(double investement) {
+    Industry i(*this);
     double sigmoid = 1/(1+std::exp(-investement));
     double fracDiff = (currentTechnology - productivity)/currentTechnology;
     investement = investement*(1 - 0.5*fracDiff);
     double newProductivity = productivity + (2*sigmoid - 1)*(currentTechnology - productivity);
-    double newConstantCapital = productivity*productivityToConstantCapital;
-    return {newProductivity, newConstantCapital};
+    i.productivity = newProductivity;
+    return i;
 }
 
-double Industry::getTheoreticalProductionCapacity(double investement) {
-    return productionCapacity + investement/5;
+Industry Industry::theoreticalProductionCapacityInvestement(double investement) {
+    Industry i(*this);
+    i.productionCapacity += investement/5;
+    return i;
+}
+
+double Industry::getTheoreticalConstantCapital(double theoreticalProductivity) {
+    return theoreticalProductivity*productivityToConstantCapital*numWorkers;
 }
 
 std::map<WorkerType, double> Industry::getWorkerDistribution() {
@@ -98,15 +123,28 @@ std::map<WorkerType, double> Industry::getWorkerDistribution() {
 }
 
 double Industry::getProfit() {
-    double production = getProduction();
-    double wages = getTotalWages();
-    std::cout << production << ", " << wages << std::endl;
-    return production - (wages + constantCapitalCost);
+    return Industry::getProfit(getProduction(), getTotalWages(), getConstantCapital());
+}
+
+double Industry::getProduction(double productivity, double numWorkers) {
+    return productivity*numWorkers;
+}
+
+double Industry::getTotalWages(double wagePerWorker, double numWorkers) {
+    return wagePerWorker*numWorkers;
+}
+
+double Industry::getConstantCapital(double productivity, double productivityToConstantCapital, double numWorkers) {
+    return productivity*productivityToConstantCapital*numWorkers;
+}
+
+double Industry::getProfit(double production, double totalWages, double constantCapital) {
+    return production - (totalWages + constantCapital);
 }
 
 Industry Industry::testSetup() {
     std::map<WorkerType, double> workerDistribution = { {HighSkilled, 0.2}, {Skilled, 0.4}, {Unskilled, 0.4} };
     std::map<WorkerType, double> payDistribution = { {HighSkilled, 5.0/8}, {Skilled, 2.0/8}, {Unskilled, 1.0/8} };
-    Industry i(1, 50, 0.65, 5, workerDistribution, payDistribution);
+    Industry i(1, 50, 0.65, workerDistribution, payDistribution);
     return i;
 }

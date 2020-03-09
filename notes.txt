@@ -39,3 +39,12 @@
     - So, main event loop goes:
         - Industry produces. Then Capital re-invests and Pops consume. Taxes and subsidies are applied during this process.
     - Investement becomes increasingly expensive as more is invested within a single turn (?)
+    - There are different simple models for how investements could work
+        - It could be discrete, that way making a choice is easier
+            - Obvious problems with this is what happens when there isnt enough money
+            - Perhaps a midway solution would be to just have a maximal investement
+        - Choice of where to invest could be done on the immediate proportion return
+            - This seems the easiest and it seems like it would behave smoothly
+            - Funds could close off to external investement when they have too much money already
+            - Any funds that have nowhere reasonable to invest their surplus value will just consume it instead
+    - Should be writing tests ASAP!!!

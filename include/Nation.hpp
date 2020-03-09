@@ -19,14 +19,21 @@ struct ElectorProperties {
     const double chanceJobRedistributed;
 };
 
+struct CapitalistProperties {
+    double numCapitalists;
+    const double minUtility;
+};
+
 class Nation {
 private:
     std::string name;
     PopulationProperties populationProps;
     ElectorProperties electorProperties;
+    CapitalistProperties capitalistProps;
     Industry privateIndustry;
 
     double getWorkingPopulation();
+    double getEmployablePopulation();
     bool atFullEmployement();
 
     void distributeJobsToElectors(std::map<WorkerEducation, std::map<WorkerType, double>> jobDist);
@@ -37,7 +44,11 @@ private:
                           std::map<WorkerType, double> availableJobsDist,
                           std::map<WorkerEducation, double> educationDist);
 public:
-    Nation(std::string name, PopulationProperties populationProperties, ElectorProperties electorProperties, Industry privateIndustry);
+    Nation(std::string name, 
+           PopulationProperties populationProperties, 
+           ElectorProperties electorProperties, 
+           CapitalistProperties capitalistProperties, 
+           Industry privateIndustry);
     void runIndustryTurn();
 
     static Nation testSetupSingleNation();

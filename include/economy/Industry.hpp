@@ -9,9 +9,8 @@ private:
     double productionCapacity;
     double numWorkers;
     double wagePerWorker;
-    double constantCapitalCost;
     double currentTechnology;
-    const double productivityToConstantCapital = 5;
+    const double productivityToConstantCapital = 1/8.0;
     std::map<WorkerType, double> workerDistribution = {};
     std::map<WorkerType, double> payDistribution = {};
 
@@ -19,7 +18,6 @@ public:
     Industry(double productivity,
             double productionCapacity,
             double wagePerWorker,
-            double constantCapitalCost,
             std::map<WorkerType, double> workerDistribution,
             std::map<WorkerType, double> payDistribution);
 
@@ -29,13 +27,25 @@ public:
     double getTotalWages();
     double getProfit();
     double getNumWorkers();
-    void setNumWorkers(double nWorkers);
+    double getWagePerWorker();
     double getProductionCapacity();
+    double getProductivityToConstantCapital();
     double getNumJobs();
-    std::pair<double, double> getTheoreticalProductivityAndConstantCapital(double investement);
-    double getTheoreticalProductionCapacity(double investement);
+    double getProductivity();
+    double getConstantCapital();
+    Industry theoreticalProductivityInvestement(double investement);
+    Industry theoreticalProductionCapacityInvestement(double investement);
+    double getTheoreticalConstantCapital(double theoreticalProductivity);
     std::map<WorkerType, double> getWorkerDistribution();
     std::map<WorkerType, double> getWages();
+
+    void setNumWorkers(double nWorkers);
+    void setCurrentTechnology(double currentTech);
+
+    static double getProduction(double productivity, double numWorkers);
+    static double getTotalWages(double wagePerWorker, double numWorkers);
+    static double getConstantCapital(double productivity, double productivityToConstantCapital, double numWorkers);
+    static double getProfit(double production, double wages, double constantCapital);
 
     static Industry testSetup();
 };
