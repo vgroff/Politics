@@ -80,6 +80,14 @@ double Industry::getNumJobs() {
     return productionCapacity;
 }
 
+double Industry::getProductionCapacityCost() {
+    return ;
+}
+
+double Industry::getTheoreticalProductionCapacity(double investement) {
+    return productionCapacity + investement/5;
+}
+
 std::map<WorkerType, double> Industry::getWorkerDistribution() {
     return workerDistribution;
 }

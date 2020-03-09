@@ -38,3 +38,4 @@
     by step, with a greedy algorithm making the best current choice
     - So, main event loop goes:
         - Industry produces. Then Capital re-invests and Pops consume. Taxes and subsidies are applied during this process.
+    - Investement becomes increasingly expensive as more is invested within a single turn (?)

@@ -30,6 +30,8 @@ public:
     void setNumWorkers(double nWorkers);
     double getProductionCapacity();
     double getNumJobs();
+    std::pair<double, double> getProductionCapacityCost();
+    std::pair<double, double> getProductivityInvestementCost();
     std::map<WorkerType, double> getWorkerDistribution();
     std::map<WorkerType, double> getWages();
 
