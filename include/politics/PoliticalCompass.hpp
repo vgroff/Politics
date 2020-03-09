@@ -20,4 +20,4 @@ public:
                           std::map<PoliticalAxis, double> strengths);
     double getValue(PoliticalAxis axis);
     double getDistanceTo(PoliticalCompassPoint point2);
-}
+};

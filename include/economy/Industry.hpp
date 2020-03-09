@@ -10,6 +10,8 @@ private:
     double numWorkers;
     double wagePerWorker;
     double constantCapitalCost;
+    double currentTechnology;
+    const double productivityToConstantCapital = 5;
     std::map<WorkerType, double> workerDistribution = {};
     std::map<WorkerType, double> payDistribution = {};
 
@@ -30,8 +32,8 @@ public:
     void setNumWorkers(double nWorkers);
     double getProductionCapacity();
     double getNumJobs();
-    std::pair<double, double> getProductionCapacityCost();
-    std::pair<double, double> getProductivityInvestementCost();
+    std::pair<double, double> getTheoreticalProductivityAndConstantCapital(double investement);
+    double getTheoreticalProductionCapacity(double investement);
     std::map<WorkerType, double> getWorkerDistribution();
     std::map<WorkerType, double> getWages();
 

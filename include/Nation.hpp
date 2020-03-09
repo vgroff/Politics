@@ -29,6 +29,8 @@ private:
     double getWorkingPopulation();
     bool atFullEmployement();
 
+    void distributeJobsToElectors(std::map<WorkerEducation, std::map<WorkerType, double>> jobDist);
+
     void growPopulation();
     std::map<WorkerEducation, std::map<WorkerType, double>> calculateJobDistribution();
     double distributeJobs(std::map<WorkerEducation, std::map<WorkerType, double>>& actualJobDist,

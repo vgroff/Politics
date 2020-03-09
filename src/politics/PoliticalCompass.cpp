@@ -1,11 +1,11 @@
-#include "../../include/politics/PoliticalCompass.hpp"
 #include<cmath>
+#include "../../include/politics/PoliticalCompass.hpp"
 
 PoliticalCompassPoint::PoliticalCompassPoint(std::map<PoliticalAxis, double> point,
                                              std::map<PoliticalAxis, double> strengths) {
     if (point.size() == politicalAxis_size && strengths.size() == politicalAxis_size) {
         point = point;
-        strengths = strengths
+        strengths = strengths;
     } else {
         throw std::invalid_argument("Point and strengths map are not the correct size");
     }

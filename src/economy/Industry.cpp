@@ -80,8 +80,13 @@ double Industry::getNumJobs() {
     return productionCapacity;
 }
 
-double Industry::getProductionCapacityCost() {
-    return ;
+std::pair<double, double> Industry::getTheoreticalProductivityAndConstantCapital(double investement) {
+    double sigmoid = 1/(1+std::exp(-investement));
+    double fracDiff = (currentTechnology - productivity)/currentTechnology;
+    investement = investement*(1 - 0.5*fracDiff);
+    double newProductivity = productivity + (2*sigmoid - 1)*(currentTechnology - productivity);
+    double newConstantCapital = productivity*productivityToConstantCapital;
+    return {newProductivity, newConstantCapital};
 }
 
 double Industry::getTheoreticalProductionCapacity(double investement) {

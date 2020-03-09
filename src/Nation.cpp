@@ -19,9 +19,34 @@ void Nation::runIndustryTurn() {
         // TODO: try to increase employement if production capacity is available
     }
     std::map<WorkerEducation, std::map<WorkerType, double>> jobDist = calculateJobDistribution();
+    distributeJobsToElectors(jobDist);
+
+    // Calculate wages
+    std::map<WorkerType, double> wages = privateIndustry.getWages();
+
+    // Get utilty for each worker type (update the Pops)
+    std::cout << "Utilities: " << std::endl;
+    for (std::pair<WorkerType, double> wagePair : wages) {
+        double utility = getUtility(wagePair.second);
+        for (auto& elector : electorProperties.electors) {
+            if (wagePair.first == elector.getWorkerType()) {
+                elector.setUtility(utility);
+                std::cout << workerTypeToString(elector.getWorkerType()) << " " << workerEducationToString(elector.getWorkerEducation())
+                << ", " << "(" << utility << ", " << elector.getLongTermUtility() << ", " << elector.getShortTermUtility() << "), " << std::endl;
+            }
+        }
+    }
+    std::cout << std::endl;
+    // Calculate profit
+    double privateProfit = privateIndustry.getProfit();
+    std::cout << "Profit: " << privateProfit << std::endl;
+}
+
+void Nation::distributeJobsToElectors(std::map<WorkerEducation, std::map<WorkerType, double>> jobDist) {
     double chanceJobRedistributed = 1;
     if (electorProperties.jobsDistributed == true) {
         chanceJobRedistributed = electorProperties.chanceJobRedistributed;
+    } else {
         electorProperties.jobsDistributed = true;
     }
     for (size_t i = 0; i < electorProperties.electors.size(); i++) {
@@ -36,27 +61,7 @@ void Nation::runIndustryTurn() {
             }
         }
     }
-    // Calculate wages
-    std::map<WorkerType, double> wages = privateIndustry.getWages();
-
-    // Get utilty for each worker type (update the Pops)
-    std::cout << "Utilities: " << std::endl;
-    for (std::pair<WorkerType, double> wagePair : wages) {
-        double utility = getUtility(wagePair.second);
-        for (auto& elector : electorProperties.electors) {
-            if (wagePair.first == elector.getWorkerType()) {
-                elector.setUtility(utility);
-                // std::cout << workerTypeToString(elector.getWorkerType()) << workerEducationToString(elector.getWorkerEducation())
-                // << ", " << "(" << utility << ", " << elector.getLongTermUtility() << ", " << elector.getShortTermUtility() << "), " << std::endl;
-            }
-        }
-    }
-    std::cout << std::endl;
-    // Calculate profit
-    double privateProfit = privateIndustry.getProfit();
-    std::cout << "Profit: " << privateProfit << std::endl;
 }
-
 
 std::map<WorkerEducation, std::map<WorkerType, double>> Nation::calculateJobDistribution() {
     std::map<WorkerType, double> theoreticalJobDist = privateIndustry.getWorkerDistribution();
@@ -115,7 +120,6 @@ std::map<WorkerEducation, std::map<WorkerType, double>> Nation::calculateJobDist
     for (auto& workerJobDist : actualJobDist) {
         double sum = 0;
         for (auto& workerPair: workerJobDist.second) {
-            std::cout << workerEducationToString(workerJobDist.first) << ", " << workerTypeToString(workerPair.first) << ", " << workerPair.second << std::endl;
             sum += workerPair.second;
         }
         double diff = electorProperties.workerEducation.at(workerJobDist.first) - sum;
@@ -127,7 +131,6 @@ std::map<WorkerEducation, std::map<WorkerType, double>> Nation::calculateJobDist
         }
         for (auto& workerPair: workerJobDist.second) {
             workerPair.second = workerPair.second / electorProperties.workerEducation.at(workerJobDist.first);
-            std::cout << workerEducationToString(workerJobDist.first) << ", " << workerTypeToString(workerPair.first) << ", " << workerPair.second << std::endl;
         }
     }
     return actualJobDist;
