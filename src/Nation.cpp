@@ -57,8 +57,8 @@ void Nation::runIndustryTurn() {
 
         double newProfit1 = i.getProfit();
         double newProfit2 = 0;
-        bool industryFullyEmployed = 1.00001*privateIndustry.getNumWorkers() => privateIndustry.getProductionCapacity(); 
-        bool populationFullyEmployed = 1.00001*privateIndustry.getNumWorkers() => getEmployablePopulation();
+        bool industryFullyEmployed = 1.00001*privateIndustry.getNumWorkers() >= privateIndustry.getProductionCapacity(); 
+        bool populationFullyEmployed = 1.00001*privateIndustry.getNumWorkers() >= getEmployablePopulation();
         if (industryFullyEmployed && populationFullyEmployed) {
             i2.setNumWorkers(i2.getProductionCapacity());
             newProfit2 = i2.getProfit();
@@ -67,13 +67,13 @@ void Nation::runIndustryTurn() {
         double changeInProfit2 = newProfit2 - privateProfit;
         if (changeInProfit1 > 0 || changeInProfit2 > 0) {
             if (newProfit1 > newProfit2) {
-
+                // TODO: Need a function that will do the actual investing
+                // but need to re-factor code out from a method
             } else {
-
+                // TODO: Same here
             }
         }
 
-        // Check if num workers is equal to production capacity before re-investing
     }
 }
 
