@@ -46,7 +46,8 @@ void Nation::runIndustryTurn() {
         for (auto& elector : electorProperties.electors) {
             if (wagePair.first == elector.getWorkerType()) {
                 elector.setUtility(utility);
-                std::cout << workerTypeToString(elector.getWorkerType()) << "(" << utility << ", " << elector.getLongTermUtility() << ", " << elector.getShortTermUtility() << "), " << std::endl;
+                // std::cout << workerTypeToString(elector.getWorkerType()) << workerEducationToString(elector.getWorkerEducation())
+                // << ", " << "(" << utility << ", " << elector.getLongTermUtility() << ", " << elector.getShortTermUtility() << "), " << std::endl;
             }
         }
     }

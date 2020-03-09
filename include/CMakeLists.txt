@@ -1,6 +1,8 @@
 add_subdirectory(economy)
 add_subdirectory(common)
 add_subdirectory(electors)
+add_subdirectory(politics)
+
 
 
 target_sources(politics
