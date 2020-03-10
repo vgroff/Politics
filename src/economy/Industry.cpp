@@ -51,6 +51,12 @@ std::map<WorkerType, double> Industry::getWages() {
     return wages;
 }
 
+void Industry::printStatus() {
+    std::cout << "Industry Report: " << std::endl;
+    std::cout << "Productivity: " << getProductivity()  << std::endl;
+    std::cout << "Production Capacity: " << getProductionCapacity() << " (Workers: " << getNumWorkers() << ")" << std::endl;
+}
+
 void Industry::setNumWorkers(double nWorkers) {
     if (nWorkers > getNumJobs()) {
         throw(std::invalid_argument("Industry can not support this many workers"));
@@ -105,10 +111,12 @@ Industry Industry::theoreticalProductivityInvestement(double investement) {
 }
 
 void Industry::makeProductivityInvestement(double investement) {
-    double sigmoid = 1/(1+std::exp(-investement/(currentTechnology*8/MONTHS_PER_TURN)));
-    double fracDiff = (currentTechnology - productivity)/currentTechnology;
-    investement = investement*(1 - 0.75*fracDiff);
-    double newProductivity = productivity + (2*sigmoid - 1)*(currentTechnology - productivity);
+    double diff = (currentTechnology - productivity);
+    double fracDiff = diff / currentTechnology;
+    double adjInvestement = (1 - 0.35*fracDiff)*investement/productionCapacity; // Punishment for pushing the bounds of technology
+    double sigmoid = 1/(1 + std::exp(-adjInvestement*MONTHS_PER_TURN/(currentTechnology)));
+    double additionalProductivity = diff * (2*sigmoid - 1); 
+    double newProductivity = productivity + additionalProductivity;
     productivity = newProductivity;
 }
 
@@ -119,7 +127,7 @@ Industry Industry::theoreticalProductionCapacityInvestement(double investement) 
 }
 
 void Industry::makeProductionCapacityInvestement(double investement) {
-    productionCapacity += investement/5;
+    productionCapacity += investement*investementToProductionCapacityRatio;
 }
 
 double Industry::getTheoreticalConstantCapital(double theoreticalProductivity) {
@@ -154,6 +162,6 @@ Industry Industry::testSetup() {
     std::map<WorkerType, double> workerDistribution = { {HighSkilled, 0.2}, {Skilled, 0.4}, {Unskilled, 0.4} };
     std::map<WorkerType, double> payDistribution = { {HighSkilled, 5.0/8}, {Skilled, 2.0/8}, {Unskilled, 1.0/8} };
     Industry i(1, 37, 0.65, workerDistribution, payDistribution);
-    i.setCurrentTechnology(1.1);
+    i.setCurrentTechnology(1.05);
     return i;
 }

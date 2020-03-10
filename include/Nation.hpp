@@ -24,12 +24,17 @@ struct CapitalistProperties {
     const double minUtility;
 };
 
+struct ResearchProperties {
+    double research;
+};
+
 class Nation {
 private:
     std::string name;
     PopulationProperties populationProps;
     ElectorProperties electorProperties;
     CapitalistProperties capitalistProps;
+    ResearchProperties researchProps;
     Industry privateIndustry;
     double capitalInTheBank = 0;
 
@@ -52,6 +57,7 @@ public:
            PopulationProperties populationProperties, 
            ElectorProperties electorProperties, 
            CapitalistProperties capitalistProperties, 
+           ResearchProperties researchProps,
            Industry privateIndustry);
     void runIndustryTurn();
 

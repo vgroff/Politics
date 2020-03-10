@@ -8,11 +8,13 @@ Nation::Nation(std::string name,
                PopulationProperties populationProperties,
                ElectorProperties electorProperties, 
                CapitalistProperties capitalistProps, 
+               ResearchProperties researchProps,
                Industry privateIndustry)
     : name(name), 
     populationProps(populationProperties), 
     electorProperties(electorProperties), 
     capitalistProps(capitalistProps),
+    researchProps(researchProps),
     privateIndustry(privateIndustry) {    
     if (sumsToOne(electorProperties.workerEducation) == false) {
         throw std::invalid_argument("Worker education does not sum to one");
@@ -20,6 +22,9 @@ Nation::Nation(std::string name,
 }
 
 void Nation::runIndustryTurn() {
+    std::cout << "Research level: " << researchProps.research << std::endl;
+    researchProps.research += 0.005*MONTHS_PER_TURN;
+    privateIndustry.setCurrentTechnology(researchProps.research);
     // Increase population size
     growPopulation();
     // Increase employement if possible
@@ -49,15 +54,15 @@ void Nation::runIndustryTurn() {
     double privateProfit = privateIndustry.getProfit();
     std::cout << "Profit: " << privateProfit << std::endl;
     double costOfLiving = capitalistProps.numCapitalists*inverseUtility(capitalistProps.minUtility);
-    std::cout << "CostOfLiving: " << costOfLiving << std::endl;
     if (costOfLiving < privateProfit) {
         double investement = privateProfit - costOfLiving;
         double newProfit1 = getProductivityInvestement(investement);
         double newProfit2 = getProductionCapacityInvestement(investement);
         std::cout << newProfit1 << " " << newProfit2 << std::endl;
 
-        double changeInProfit1 = newProfit1 - privateProfit;
-        double changeInProfit2 = newProfit2 - privateProfit;
+        double changeInProfit1 = (newProfit1 - privateProfit) - investement/(12*10/MONTHS_PER_TURN);
+        double changeInProfit2 = (newProfit2 - privateProfit) - investement/(12*10/MONTHS_PER_TURN);
+        std::cout << "Changes in profit " << changeInProfit1 << " " << changeInProfit2 << std::endl;
         if (changeInProfit1 > 0 || changeInProfit2 > 0) {
             if (newProfit1 > newProfit2) {
                 privateIndustry.makeProductivityInvestement(investement);
@@ -70,7 +75,12 @@ void Nation::runIndustryTurn() {
             capitalInTheBank += investement;
             std::cout << "No investement, capital in the bank: " << capitalInTheBank << std::endl;
         }
-
+        privateIndustry.printStatus();
+        const double capitalRatioConsumed = 0.2;
+        double finalCapitalistIncome = costOfLiving/capitalistProps.numCapitalists + capitalInTheBank*capitalRatioConsumed/capitalistProps.numCapitalists;
+        capitalInTheBank -= capitalInTheBank*capitalRatioConsumed;
+        double capitalistUtility = getUtility(finalCapitalistIncome);
+        std::cout << "Capitalist Utility: " << capitalistUtility << " Cost: " << finalCapitalistIncome << std::endl;
     }
 }
 
@@ -142,8 +152,9 @@ std::map<WorkerEducation, std::map<WorkerType, double>> Nation::calculateJobDist
     }
     double minJobFilledRatio = distributeJobs(testJobDist, theoreticalJobDist, educationDist);
     // Set the amount of workers
-    if (workingPopulation / privateIndustry.getNumJobs() < 1) {
-        privateIndustry.setNumWorkers(workingPopulation);
+    double employablePopulation = getEmployablePopulation();
+    if ( employablePopulation / privateIndustry.getNumJobs() < 1) {
+        privateIndustry.setNumWorkers(employablePopulation);
     } else {
         privateIndustry.setNumWorkers(minJobFilledRatio*privateIndustry.getNumJobs());
     }
@@ -275,11 +286,15 @@ Nation Nation::testSetupSingleNation() {
         .numCapitalists = 0.3,
         .minUtility = 0.8
     };
+    ResearchProperties researchProps {
+        .research = 1.1
+    };
 
     Nation nation("United Kingdom",
                   props,
                   electors,
                   capitalistProps,
+                  researchProps,
                   Industry::testSetup());
     return nation;
 }
