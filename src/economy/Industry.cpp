@@ -113,7 +113,7 @@ Industry Industry::theoreticalProductivityInvestement(double investement) {
 void Industry::makeProductivityInvestement(double investement) {
     double diff = (currentTechnology - productivity);
     double fracDiff = diff / currentTechnology;
-    double adjInvestement = (1 - 0.35*fracDiff)*investement/productionCapacity; // Punishment for pushing the bounds of technology
+    double adjInvestement = (1 - 0.5*fracDiff)*investement/productionCapacity; // Punishment for pushing the bounds of technology
     double sigmoid = 1/(1 + std::exp(-adjInvestement*MONTHS_PER_TURN/(currentTechnology)));
     double additionalProductivity = diff * (2*sigmoid - 1); 
     double newProductivity = productivity + additionalProductivity;

@@ -23,7 +23,7 @@ Nation::Nation(std::string name,
 
 void Nation::runIndustryTurn() {
     std::cout << "Research level: " << researchProps.research << std::endl;
-    researchProps.research += 0.005*MONTHS_PER_TURN;
+    researchProps.research = researchProps.research*(1 + 0.02*MONTHS_PER_TURN/12);
     privateIndustry.setCurrentTechnology(researchProps.research);
     // Increase population size
     growPopulation();
@@ -287,7 +287,7 @@ Nation Nation::testSetupSingleNation() {
         .minUtility = 0.8
     };
     ResearchProperties researchProps {
-        .research = 1.1
+        .research = 1.06
     };
 
     Nation nation("United Kingdom",
