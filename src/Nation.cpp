@@ -39,8 +39,8 @@ void Nation::runIndustryTurn() {
         for (auto& elector : electorProperties.electors) {
             if (wagePair.first == elector.getWorkerType()) {
                 elector.setUtility(utility);
-                std::cout << workerTypeToString(elector.getWorkerType()) << " " << workerEducationToString(elector.getWorkerEducation()) << " " << wagePair.second
-                << ", " << "(" << utility << ", " << elector.getLongTermUtility() << ", " << elector.getShortTermUtility() << "), " << std::endl;
+                // std::cout << workerTypeToString(elector.getWorkerType()) << " " << workerEducationToString(elector.getWorkerEducation()) << " " << wagePair.second
+                // << ", " << "(" << utility << ", " << elector.getLongTermUtility() << ", " << elector.getShortTermUtility() << "), " << std::endl;
             }
         }
     }
@@ -52,29 +52,45 @@ void Nation::runIndustryTurn() {
     std::cout << "CostOfLiving: " << costOfLiving << std::endl;
     if (costOfLiving < privateProfit) {
         double investement = privateProfit - costOfLiving;
-        Industry i = privateIndustry.theoreticalProductivityInvestement(investement);
-        Industry i2 = privateIndustry.theoreticalProductionCapacityInvestement(investement);
+        double newProfit1 = getProductivityInvestement(investement);
+        double newProfit2 = getProductionCapacityInvestement(investement);
+        std::cout << newProfit1 << " " << newProfit2 << std::endl;
 
-        double newProfit1 = i.getProfit();
-        double newProfit2 = 0;
-        bool industryFullyEmployed = 1.00001*privateIndustry.getNumWorkers() >= privateIndustry.getProductionCapacity(); 
-        bool populationFullyEmployed = 1.00001*privateIndustry.getNumWorkers() >= getEmployablePopulation();
-        if (industryFullyEmployed && populationFullyEmployed) {
-            i2.setNumWorkers(i2.getProductionCapacity());
-            newProfit2 = i2.getProfit();
-        }
         double changeInProfit1 = newProfit1 - privateProfit;
         double changeInProfit2 = newProfit2 - privateProfit;
         if (changeInProfit1 > 0 || changeInProfit2 > 0) {
             if (newProfit1 > newProfit2) {
-                // TODO: Need a function that will do the actual investing
-                // but need to re-factor code out from a method
+                privateIndustry.makeProductivityInvestement(investement);
+                std::cout << "Invested " << investement << " in productivity (now " << privateIndustry.getProductivity() << ")" << std::endl; 
             } else {
-                // TODO: Same here
+                privateIndustry.makeProductionCapacityInvestement(investement);
+                std::cout << "Invested " << investement << " in production capacity (now " << privateIndustry.getProductionCapacity() << ")" << std::endl; 
             }
+        } else {
+            capitalInTheBank += investement;
+            std::cout << "No investement, capital in the bank: " << capitalInTheBank << std::endl;
         }
 
     }
+}
+
+double Nation::getProductionCapacityInvestement(double investement) {
+    Industry i2 = privateIndustry.theoreticalProductionCapacityInvestement(investement);
+    double newProfit2 = 0;
+    bool industryFullyEmployed = 1.00001*privateIndustry.getNumWorkers() >= privateIndustry.getProductionCapacity(); 
+    bool populationFullyEmployed = 1.00001*privateIndustry.getNumWorkers() >= getEmployablePopulation();
+    if (industryFullyEmployed && !populationFullyEmployed) {
+        // Don't invest if all jobs are not filled
+        // Don't invest if there arent workers to fill the jobs
+        i2.setNumWorkers(i2.getProductionCapacity());
+        newProfit2 = i2.getProfit();
+    }
+    return newProfit2;
+}
+
+double Nation::getProductivityInvestement(double investement) {
+    Industry i = privateIndustry.theoreticalProductivityInvestement(investement);
+    return i.getProfit();
 }
 
 void Nation::distributeJobsToElectors(std::map<WorkerEducation, std::map<WorkerType, double>> jobDist) {

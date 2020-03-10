@@ -5,7 +5,7 @@
 int main() {
     std::srand(38);
     Engine e = Engine::testSetup();
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 10; i++) {
         e.playTurn();
     }
     return 0;

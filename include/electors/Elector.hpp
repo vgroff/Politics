@@ -29,7 +29,7 @@ void throwIfInconsistent(const std::map<WorkerType, double>& workerDistribution,
 
 class Elector {
 private:
-    const double shortTermMultiplier = 0.35*MONTHS_PER_TURN; // Might not scale well (not linear)
+    const double shortTermMultiplier = 0.25*MONTHS_PER_TURN; // Might not scale well (not linear)
     const double longTermMultiplier  = 0.05*MONTHS_PER_TURN;
     double currentUtility;
     double shortTermUtility;

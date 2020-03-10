@@ -100,18 +100,26 @@ void Industry::setCurrentTechnology(double newTech) {
 
 Industry Industry::theoreticalProductivityInvestement(double investement) {
     Industry i(*this);
-    double sigmoid = 1/(1+std::exp(-investement));
-    double fracDiff = (currentTechnology - productivity)/currentTechnology;
-    investement = investement*(1 - 0.5*fracDiff);
-    double newProductivity = productivity + (2*sigmoid - 1)*(currentTechnology - productivity);
-    i.productivity = newProductivity;
+    i.makeProductivityInvestement(investement);
     return i;
+}
+
+void Industry::makeProductivityInvestement(double investement) {
+    double sigmoid = 1/(1+std::exp(-investement/(currentTechnology*8/MONTHS_PER_TURN)));
+    double fracDiff = (currentTechnology - productivity)/currentTechnology;
+    investement = investement*(1 - 0.75*fracDiff);
+    double newProductivity = productivity + (2*sigmoid - 1)*(currentTechnology - productivity);
+    productivity = newProductivity;
 }
 
 Industry Industry::theoreticalProductionCapacityInvestement(double investement) {
     Industry i(*this);
-    i.productionCapacity += investement/5;
+    i.makeProductionCapacityInvestement(investement);
     return i;
+}
+
+void Industry::makeProductionCapacityInvestement(double investement) {
+    productionCapacity += investement/5;
 }
 
 double Industry::getTheoreticalConstantCapital(double theoreticalProductivity) {
@@ -145,6 +153,7 @@ double Industry::getProfit(double production, double totalWages, double constant
 Industry Industry::testSetup() {
     std::map<WorkerType, double> workerDistribution = { {HighSkilled, 0.2}, {Skilled, 0.4}, {Unskilled, 0.4} };
     std::map<WorkerType, double> payDistribution = { {HighSkilled, 5.0/8}, {Skilled, 2.0/8}, {Unskilled, 1.0/8} };
-    Industry i(1, 50, 0.65, workerDistribution, payDistribution);
+    Industry i(1, 37, 0.65, workerDistribution, payDistribution);
+    i.setCurrentTechnology(1.1);
     return i;
 }

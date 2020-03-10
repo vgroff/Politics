@@ -31,12 +31,16 @@ private:
     ElectorProperties electorProperties;
     CapitalistProperties capitalistProps;
     Industry privateIndustry;
+    double capitalInTheBank = 0;
 
     double getWorkingPopulation();
     double getEmployablePopulation();
     bool atFullEmployement();
 
     void distributeJobsToElectors(std::map<WorkerEducation, std::map<WorkerType, double>> jobDist);
+
+    double getProductionCapacityInvestement(double investement);
+    double getProductivityInvestement(double investement);
 
     void growPopulation();
     std::map<WorkerEducation, std::map<WorkerType, double>> calculateJobDistribution();

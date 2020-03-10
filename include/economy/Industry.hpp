@@ -10,7 +10,7 @@ private:
     double numWorkers;
     double wagePerWorker;
     double currentTechnology;
-    const double productivityToConstantCapital = 1/8.0;
+    const double productivityToConstantCapital = 1/6.0;
     std::map<WorkerType, double> workerDistribution = {};
     std::map<WorkerType, double> payDistribution = {};
 
@@ -33,6 +33,8 @@ public:
     double getNumJobs();
     double getProductivity();
     double getConstantCapital();
+    void makeProductivityInvestement(double investement);
+    void makeProductionCapacityInvestement(double investement);
     Industry theoreticalProductivityInvestement(double investement);
     Industry theoreticalProductionCapacityInvestement(double investement);
     double getTheoreticalConstantCapital(double theoreticalProductivity);
