@@ -19,3 +19,20 @@ bool coinFlip(double prob) {
     }
     return false;
 }
+
+Gaussian::Gaussian(double mean, double stdDev) {
+    setMean(mean);
+    setStdDev(stdDev);
+}
+
+double Gaussian::sample() {
+    return dist(generator);
+}
+
+void Gaussian::setMean(double mean) {
+    dist.mean = mean;
+}
+
+void Gaussian::setStdDev(double stdDev) {
+    dist.stddev = stdDev;
+}

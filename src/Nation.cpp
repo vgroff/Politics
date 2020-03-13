@@ -23,7 +23,8 @@ Nation::Nation(std::string name,
 
 void Nation::runIndustryTurn() {
     std::cout << "Research level: " << researchProps.research << std::endl;
-    researchProps.research = researchProps.research*(1 + 0.02*MONTHS_PER_TURN/12);
+    double productivityDiff = (researchProps.research - privateIndustry.getProductivity())/researchProps.research;
+    researchProps.research = researchProps.research*(1 + 0.01*MONTHS_PER_TURN/12 + 0.015*std::pow(productivityDiff, 2)*MONTHS_PER_TURN/12);
     privateIndustry.setCurrentTechnology(researchProps.research);
     // Increase population size
     growPopulation();

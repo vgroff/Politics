@@ -4,10 +4,24 @@
 #include<set>
 #include<vector>
 #include<iostream>
+#include<array>
 
 double weightedMovingAvg(double memoryWeight, double oldAverage, double newValue);
 bool coinFlip(double prob);
 double random0to1();
+
+class Gaussian {
+private:
+    double mean;
+    double stdDev;
+    std::default_random_engine generator;
+    std::normal_distribution<double> dist;
+public:
+    Gaussian(double mean, double stdDev);
+    void setMean(double stdDev);
+    void setStdDev(double stdDev);
+    double sample();
+};
 
 template<typename A>
 void throwIfInconsistent(const std::map<A, double>& dist1,
@@ -62,16 +76,63 @@ bool sumsToOne(std::map<A, double> dist) {
     return false;
 }
 
+template<typename A, size_t SIZE>
+bool sumsToOne(std::array<A, SIZE> dist) {
+    double sumDist = 0;
+    for (size_t i = 0; i < SIZE; i++) {
+        sumDist += dist[i];
+    }
+    if (std::abs(sumDist - 1) < 0.00001) {
+        return true;
+    }
+    return false;
+}
+
+
+template<typename A>
+void normalise(std::vector<std::pair<A, double>>& dist) {
+    double sumDist = 0;
+    for (size_t i = 0; i < dist.size(); i++) {
+        sumDist += dist[i];
+    }
+    for (size_t i = 0; i < dist.size(); i++) {
+        sumDist += dist[i] / sumDist;
+    }
+}
+
 
 template<typename A>
 A coinFlip(const std::map<A, double>& probabilityDist) {
-    sumsToOne(probabilityDist);
-    double rand = random0to1();
+    double rand = random0to1() + 0.00001;
     double val = 0;
     for (const auto& probDist : probabilityDist) {
         val += probDist.second;
         if (val >= rand) {
             return probDist.first;
+        }
+    }
+}
+
+template<typename A>
+A coinFlip(const std::vector<std::pair<A, double>>& probabilityDist) {
+    double rand = random0to1()+0.00001;
+    double val = 0;
+    for (const auto& probDist : probabilityDist) {
+        val += probDist.second;
+        if (val >= rand) {
+            return probDist.first;
+        }
+    }
+}
+
+template<size_t SIZE>
+size_t coinFlip(const std::array<double, SIZE> probabilityDist) {
+    double rand = random0to1() + 0.00001;
+    double val = 0;
+    for (size_t i = 0; i < SIZE; i++) {
+        val += probabilityDist[i];
+        if (val >= rand) {
+            return i;
         }
     }
 }

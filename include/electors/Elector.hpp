@@ -1,7 +1,8 @@
 #pragma once
 
 #include<string>
-#include"../common/Date.hpp"
+#include "../common/Date.hpp"
+#include "../politics/PoliticalCompassPoint.hpp"
 
 enum WorkerType {
     Unemployed = 0,
@@ -36,6 +37,7 @@ private:
     double longTermUtility;
     WorkerType workerType = Unemployed;
     WorkerEducation workerEducation;
+    PoliticalCompassPoint baseIdeology;
 public:
     double setUtility(double newUtility);
     double getCurrentUtility();

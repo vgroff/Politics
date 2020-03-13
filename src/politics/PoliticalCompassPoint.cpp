@@ -1,11 +1,9 @@
 #include<cmath>
 #include "../../include/politics/PoliticalCompass.hpp"
 
-PoliticalCompassPoint::PoliticalCompassPoint(std::map<PoliticalAxis, double> point,
-                                             std::map<PoliticalAxis, double> strengths) {
-    if (point.size() == politicalAxis_size && strengths.size() == politicalAxis_size) {
+PoliticalCompassPoint::PoliticalCompassPoint(std::map<PoliticalAxis, double> point) {
+    if (point.size() == politicalAxis_size) {
         point = point;
-        strengths = strengths;
     } else {
         throw std::invalid_argument("Point and strengths map are not the correct size");
     }
@@ -22,8 +20,9 @@ double PoliticalCompassPoint::getDistanceTo(PoliticalCompassPoint point2) {
         PoliticalAxis axis = pointPair.first;
         double value = pointPair.second;
         double absDiff = std::abs(value - point2.getValue(axis));
-        sum += absDiff * strengths.at(pointPair.first);
-        sumStrengths += strengths.at(pointPair.first);
+        double strength = 1 + absDiff/1.25
+        sum += absDiff * strength;
+        sumStrengths += strength;
     }
     return sum/sumStrengths;
 }

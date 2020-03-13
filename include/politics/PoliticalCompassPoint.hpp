@@ -3,21 +3,19 @@
 
 enum PoliticalAxis {
     Capitalist = 0, // Socialist
-    Nationalist, // Internationalist
     Conservative, // Radical
-    Moralist, // Liberal
+    Nationalist, // Internationalist
+    Authoritarian, // Liberal
     Engaged, // Disinterested 
     Loyalist // Non-loyalist (loyalty to party)
 };
-const int politicalAxis_size = Loyalist + 1;
+const int politicalAxis_size = Nationalist + 1;
 
 class PoliticalCompassPoint {
 private:
     std::map<PoliticalAxis, double> point;
-    std::map<PoliticalAxis, double> strengths;
 public:
-    PoliticalCompassPoint(std::map<PoliticalAxis, double> point,
-                          std::map<PoliticalAxis, double> strengths);
+    PoliticalCompassPoint(std::map<PoliticalAxis, double> point);
     double getValue(PoliticalAxis axis);
     double getDistanceTo(PoliticalCompassPoint point2);
 };
