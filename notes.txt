@@ -47,7 +47,12 @@
             - This seems the easiest and it seems like it would behave smoothly
             - Funds could close off to external investement when they have too much money already
             - Any funds that have nowhere reasonable to invest their surplus value will just consume it instead
-    - Should be writing tests ASAP!!!
+    - Should be writing tests ASAP!!! Should be commenting code!!
     - Need to work on utility calculation, for now just introduce housing and healthcare maybe?
     - Need to work on government intervention, taxes, policies ect...
     - Need to work on govenment setup, the parliament, the parties, the factions(?) etc..
+    - Write a toString() for ideology and then set up parties
+
+CODE NOTES:
+    - Should be writing tests ASAP!!! Should be commenting code!!
+    - Should be pulling functionality out into independent funciton asap

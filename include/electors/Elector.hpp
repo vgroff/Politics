@@ -3,13 +3,15 @@
 #include<string>
 #include "../common/Date.hpp"
 #include "../politics/PoliticalCompassPoint.hpp"
+#include "../../include/politics/PoliticalCompassPointGenerator.hpp"
+
 
 enum WorkerType {
     Unemployed = 0,
     Unskilled,
     Skilled,
     HighSkilled,
-    Capitalist // Forgive me
+    Owner // Forgive me
 };
 
 enum WorkerEducation {
@@ -47,11 +49,13 @@ public:
     WorkerEducation getWorkerEducation();
     void setWorkerType(WorkerType workerType);
     bool canWorkJob(WorkerType jobType);
-    Elector(WorkerEducation workerEducation, double longTermUtility);
+    std::string toString();
+    Elector(WorkerEducation workerEducation, double longTermUtility, PoliticalCompassPoint baseIdeology);
 
     static bool canWorkJob(WorkerEducation workerEducation, WorkerType workerType);
 
     static std::vector<Elector> generateTestElectors(int numElectors,
                                                     std::map<WorkerEducation, double> distribution,
-                                                    std::map<WorkerEducation, double> utilityDistribution);
+                                                    std::map<WorkerEducation, double> utilityDistribution,
+                                                    PoliticalCompassPointGenerator generator);
 };

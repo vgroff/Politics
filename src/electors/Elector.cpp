@@ -1,6 +1,7 @@
 #include "../../include/electors/Elector.hpp"
 #include "../../include/common/Maths.hpp"
 #include<iostream>
+#include<sstream>
 
 std::string workerTypeToString(WorkerType workerType) {
     if (workerType == Unemployed) {
@@ -27,13 +28,21 @@ std::string workerEducationToString(WorkerEducation workerEducation) {
 }
 
 
-Elector::Elector(WorkerEducation workerEducation, double longTermUtility) 
+Elector::Elector(WorkerEducation workerEducation, double longTermUtility, PoliticalCompassPoint baseIdeology) 
     : longTermUtility(longTermUtility), 
     shortTermUtility(longTermUtility), 
     currentUtility(longTermUtility),
-    workerEducation(workerEducation) {
+    workerEducation(workerEducation),
+    baseIdeology(baseIdeology) {
 
 };
+
+std::string Elector::toString() {
+    std::ostringstream strStream;
+    strStream << "Ideology: " << baseIdeology.toString() << std::endl;
+    strStream << "Utility: " << currentUtility << ", " << shortTermUtility << ", " << longTermUtility << std::endl;
+    return strStream.str();
+}
 
 double Elector::setUtility(double newUtility) {
     currentUtility = newUtility;
@@ -78,13 +87,15 @@ bool Elector::canWorkJob(WorkerEducation workerEducation, WorkerType job) {
 
 std::vector<Elector> Elector::generateTestElectors(int numElectors, 
                                                     std::map<WorkerEducation, double> distribution, 
-                                                    std::map<WorkerEducation, double> utilityDistribution) {
+                                                    std::map<WorkerEducation, double> utilityDistribution,
+                                                    PoliticalCompassPointGenerator generator) {
 
     throwIfInconsistent(distribution, utilityDistribution, true, false);
     std::vector<Elector> electors;
     for (int i = 0; i < numElectors; i++) {
         WorkerEducation education = coinFlip(distribution);
-        Elector e(education, utilityDistribution.at(education));
+        Elector e(education, utilityDistribution.at(education), generator.sample());
+        std::cout << "Generated elector: " << std::endl << e.toString();
         electors.push_back(e);
     }
     return electors;

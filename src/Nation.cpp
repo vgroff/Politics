@@ -2,6 +2,7 @@
 #include "../include/electors/Utility.hpp"
 #include "../include/common/Date.hpp"
 #include "../include/common/Maths.hpp"
+#include "../include/politics/PoliticalCompassPointGenerator.hpp"
 #include<iostream>
 
 Nation::Nation(std::string name, 
@@ -45,12 +46,15 @@ void Nation::runIndustryTurn() {
         for (auto& elector : electorProperties.electors) {
             if (wagePair.first == elector.getWorkerType()) {
                 elector.setUtility(utility);
-                // std::cout << workerTypeToString(elector.getWorkerType()) << " " << workerEducationToString(elector.getWorkerEducation()) << " " << wagePair.second
-                // << ", " << "(" << utility << ", " << elector.getLongTermUtility() << ", " << elector.getShortTermUtility() << "), " << std::endl;
+                elector.toString();
             }
         }
     }
     std::cout << std::endl;
+    capitalistsInvest();
+}
+
+void Nation::capitalistsInvest() {
     // Calculate profit
     double privateProfit = privateIndustry.getProfit();
     std::cout << "Profit: " << privateProfit << std::endl;
@@ -274,9 +278,10 @@ Nation Nation::testSetupSingleNation() {
         .workingPopulationRate = 0.65,
     };
     std::map<WorkerEducation, double> workerEducationMap = {{University, 0.25}, {HighSchool, 0.5}, {School, 0.25}};
-    auto electorsVec = Elector::generateTestElectors(15, 
+    auto electorsVec = Elector::generateTestElectors(2, 
                                                 workerEducationMap,
-                                                {{University, 0.7}, {HighSchool, 0.5}, {School, 0.3}});
+                                                {{University, 0.7}, {HighSchool, 0.5}, {School, 0.3}},
+                                                PoliticalCompassPointGenerator::testSetup());
     ElectorProperties electors {
         .electors = electorsVec,
         .workerEducation = workerEducationMap,

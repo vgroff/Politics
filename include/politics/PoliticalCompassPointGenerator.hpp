@@ -5,17 +5,16 @@
 
 class PoliticalCompassDistribution {
 private:
-    static const size_t numGaussians = 3;
-    std::array<Gaussian, numGaussians> gaussians;
-    std::array<double, numGaussians> baseDist;
-    std::map<PoliticalAxis, std::array<std::pair<std::array<double, numGaussians>, double>, numGaussians>> correlations;
+    std::vector<Gaussian> gaussians;
+    std::vector<double> baseDist;
+    std::map<PoliticalAxis, std::vector<std::pair<std::vector<double>, double>>> correlations;
 public:
-    PoliticalCompassDistribution(std::array<Gaussian, numGaussians> gaussians,
-                                 std::array<double, numGaussians> baseDist,
-                                 std::map<PoliticalAxis, std::array<std::pair<std::array<double, numGaussians>, double>, numGaussians>> correlations);
-    double sample(std::map<PoliticalAxis, size_t> otherResults);
+    PoliticalCompassDistribution(std::vector<Gaussian> gaussians,
+                                 std::vector<double> baseDist,
+                                 std::map<PoliticalAxis, std::vector<std::pair<std::vector<double>, double>>> correlations);
+    std::pair<size_t, double>  sample(std::map<PoliticalAxis, size_t> otherResults);
 
-    static std::array<Gaussian, 3> generateGaussians(double mean, 
+    static std::vector<Gaussian> generateGaussians(double mean, 
                                                     double stdDevs, 
                                                     double polarisation);
 };
@@ -28,6 +27,6 @@ public:
     PoliticalCompassPoint sample();
 
     
-    static PoliticalCompassPointGenerator testSetupGenerator();
+    static PoliticalCompassPointGenerator testSetup();
 };
 

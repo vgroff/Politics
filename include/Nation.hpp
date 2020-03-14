@@ -4,7 +4,7 @@
 
 #include "economy/Industry.hpp"
 #include "electors/Elector.hpp"
-#include "politics/PoliticalCompassGenerator.hpp"
+#include "politics/PoliticalCompassPointGenerator.hpp"
 
 struct PopulationProperties {
     double population;
@@ -37,7 +37,6 @@ private:
     CapitalistProperties capitalistProps;
     ResearchProperties researchProps;
     Industry privateIndustry;
-    PoliticalCompassGenerator politicalCompassGenerator;
     double capitalInTheBank = 0;
 
     double getWorkingPopulation();
@@ -54,14 +53,14 @@ private:
     double distributeJobs(std::map<WorkerEducation, std::map<WorkerType, double>>& actualJobDist,
                           std::map<WorkerType, double> availableJobsDist,
                           std::map<WorkerEducation, double> educationDist);
+    void capitalistsInvest();
 public:
     Nation(std::string name, 
            PopulationProperties populationProperties, 
            ElectorProperties electorProperties, 
            CapitalistProperties capitalistProperties, 
            ResearchProperties researchProps,
-           Industry privateIndustry,
-           PoliticalCompassGenerator politicalCompassGenerator);
+           Industry privateIndustry);
     void runIndustryTurn();
 
     static Nation testSetupSingleNation();

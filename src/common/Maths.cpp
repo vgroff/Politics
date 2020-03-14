@@ -1,5 +1,6 @@
 #include<stdexcept>
 #include<random>
+#include<chrono>
 #include "../../include/common/Maths.hpp"
 
 double weightedMovingAvg(double memoryWeight, double oldAverage, double newValue) {
@@ -20,9 +21,33 @@ bool coinFlip(double prob) {
     return false;
 }
 
+size_t coinFlip(const std::vector<double> probabilityDist) {
+    double rand = random0to1() + 0.00001;
+    double val = 0;
+    for (size_t i = 0; i < probabilityDist.size(); i++) {
+        val += probabilityDist[i];
+        if (val >= rand) {
+            return i;
+        }
+    }
+    return probabilityDist.size();
+}
+
+bool sumsToOne(const std::vector<double>& dist) {
+    double sumDist = 0;
+    for (const auto distVal : dist) {
+        sumDist += distVal;
+    }
+    if (std::abs(sumDist - 1) < 0.00001) {
+        return true;
+    }
+    return false;    
+}
+
 Gaussian::Gaussian(double mean, double stdDev) {
     setMean(mean);
     setStdDev(stdDev);
+    generator = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
 }
 
 double Gaussian::sample() {
@@ -30,9 +55,11 @@ double Gaussian::sample() {
 }
 
 void Gaussian::setMean(double mean) {
-    dist.mean = mean;
+    this->mean = mean;
+    dist = std::normal_distribution<double>(mean, stdDev);
 }
 
 void Gaussian::setStdDev(double stdDev) {
-    dist.stddev = stdDev;
+    this->stdDev = stdDev;
+    dist = std::normal_distribution<double>(mean, stdDev);
 }

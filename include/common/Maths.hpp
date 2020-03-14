@@ -5,6 +5,7 @@
 #include<vector>
 #include<iostream>
 #include<array>
+#include<random>
 
 double weightedMovingAvg(double memoryWeight, double oldAverage, double newValue);
 bool coinFlip(double prob);
@@ -52,6 +53,8 @@ void throwIfInconsistent(const std::map<A, double>& dist1,
     }
 }
 
+bool sumsToOne(const std::vector<double>& dist);
+
 template<typename A>
 bool sumsToOne(std::vector<std::pair<A, double>> dist) {
     double sumDist = 0;
@@ -93,10 +96,10 @@ template<typename A>
 void normalise(std::vector<std::pair<A, double>>& dist) {
     double sumDist = 0;
     for (size_t i = 0; i < dist.size(); i++) {
-        sumDist += dist[i];
+        sumDist += dist[i].second;
     }
     for (size_t i = 0; i < dist.size(); i++) {
-        sumDist += dist[i] / sumDist;
+        dist[i].second = dist[i].second / sumDist;
     }
 }
 
@@ -113,6 +116,8 @@ A coinFlip(const std::map<A, double>& probabilityDist) {
     }
 }
 
+size_t coinFlip(const std::vector<double> probabilityDist);
+
 template<typename A>
 A coinFlip(const std::vector<std::pair<A, double>>& probabilityDist) {
     double rand = random0to1()+0.00001;
@@ -125,14 +130,3 @@ A coinFlip(const std::vector<std::pair<A, double>>& probabilityDist) {
     }
 }
 
-template<size_t SIZE>
-size_t coinFlip(const std::array<double, SIZE> probabilityDist) {
-    double rand = random0to1() + 0.00001;
-    double val = 0;
-    for (size_t i = 0; i < SIZE; i++) {
-        val += probabilityDist[i];
-        if (val >= rand) {
-            return i;
-        }
-    }
-}
