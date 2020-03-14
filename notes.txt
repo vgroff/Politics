@@ -52,6 +52,9 @@
     - Need to work on government intervention, taxes, policies ect...
     - Need to work on govenment setup, the parliament, the parties, the factions(?) etc..
     - Do some cleanup on the Nation class before moving forward. Refactor into individual functions if possible
+    - How could laws work? Bills could be their own objects built through composition that can manipulate the existing
+      laws held by the nation object (e.g. taxProps) and have an associate ideology etc... Bills will need some info
+      to decide on ideology and things, so a lot of things might have to be passed in
 
 CODE NOTES:
     - Should be writing tests ASAP!!! Should be commenting code!!

@@ -34,6 +34,26 @@ struct PoliticalProperties {
     std::vector<Party> parties;
 };
 
+struct TaxLaws {
+    double consumptionTax;
+    std::vector<std::pair<double, double>> incomeTaxBrackets;
+};
+
+struct WelfareLaws {
+    double welfareAmount;
+};
+
+struct LabourLaws {
+    double strength;
+};
+
+struct Laws {
+    TaxLaws taxlaws;
+    WelfareLaws welfareLaws;
+    LabourLaws labourLaws;
+};
+// Have Bill class that (see notez)
+
 class Nation {
 private:
     std::string name;
@@ -42,6 +62,7 @@ private:
     CapitalistProperties capitalistProps;
     ResearchProperties researchProps;
     PoliticalProperties politicalProps;
+    Laws laws;
     Industry privateIndustry;
     double capitalInTheBank = 0;
 
@@ -56,9 +77,6 @@ private:
 
     void growPopulation();
     std::map<WorkerEducation, std::map<WorkerType, double>> calculateJobDistribution();
-    double distributeJobs(std::map<WorkerEducation, std::map<WorkerType, double>>& actualJobDist,
-                          std::map<WorkerType, double> availableJobsDist,
-                          std::map<WorkerEducation, double> educationDist);
     void capitalistsInvest();
     void politicsTurn();
 public:
@@ -68,6 +86,7 @@ public:
            CapitalistProperties capitalistProperties, 
            ResearchProperties researchProps,
            PoliticalProperties politicalProps,
+           Laws laws,
            Industry privateIndustry);
     void runIndustryTurn();
 

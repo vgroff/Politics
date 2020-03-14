@@ -5,12 +5,58 @@
 #include "../include/politics/PoliticalCompassPointGenerator.hpp"
 #include<iostream>
 
+// Distribute available jobs amongst educations. Actual job dist is the output, along with the minimum ratio of jobs filled (due to lack of education)
+double distributeJobs(std::map<WorkerEducation, std::map<WorkerType, double>>& actualJobDist,
+                      std::map<WorkerType, double> availableJobsDist,
+                      std::map<WorkerEducation, double> educationDist) {
+    WorkerEducation currentEducation = BEST_EDUCATION;
+    std::map<WorkerType, double> jobsFilled;
+    double minRatio = 1;
+    bool outOfWorkers = false;
+    bool outOfJobs = false;
+    for (auto it = availableJobsDist.rbegin(); it != availableJobsDist.rend(); it++) {
+        // Distribute jobs in order of skill
+        WorkerType job = it->first;
+        double numJobs = it->second;
+        while (true) {
+            if (Elector::canWorkJob(currentEducation, job)) {
+                double numWorkersLeft = educationDist.at(currentEducation);
+                if (numJobs > numWorkersLeft) {
+                    actualJobDist[currentEducation][job] += numWorkersLeft;
+                    educationDist[currentEducation] -= numWorkersLeft;
+                    jobsFilled[job] += numWorkersLeft;
+                    numJobs -= numWorkersLeft;
+                } else if (numJobs <= numWorkersLeft) {
+                    actualJobDist[currentEducation][job] += numJobs;
+                    educationDist[currentEducation] -= numJobs;
+                    jobsFilled[job] += numJobs;
+                    break;
+                }
+            } else {
+                outOfWorkers = true;
+                double ratio = jobsFilled[job] / availableJobsDist[job];
+                if (ratio < minRatio) {
+                    minRatio = ratio;
+                }
+                break;
+            }
+
+            if (currentEducation == WORST_EDUCATION) {
+                break;
+            }
+            currentEducation = (WorkerEducation) (currentEducation - 1);
+        }
+    }
+    return minRatio;
+}
+
 Nation::Nation(std::string name, 
                PopulationProperties populationProperties,
                ElectorProperties electorProps, 
                CapitalistProperties capitalistProps, 
                ResearchProperties researchProps,
                PoliticalProperties politicalProps,
+               Laws laws,
                Industry privateIndustry)
     : name(name), 
     populationProps(populationProperties), 
@@ -18,6 +64,7 @@ Nation::Nation(std::string name,
     capitalistProps(capitalistProps),
     researchProps(researchProps),
     politicalProps(politicalProps),
+    laws(laws),
     privateIndustry(privateIndustry) {    
     if (sumsToOne(electorProps.workerEducation) == false) {
         throw std::invalid_argument("Worker education does not sum to one");
@@ -228,51 +275,6 @@ std::map<WorkerEducation, std::map<WorkerType, double>> Nation::calculateJobDist
         }
     }
     return actualJobDist;
-}
-
-// Distribute available jobs amongst educations. Actual job dist is the output, along with the minimum ratio of jobs filled (due to lack of education)
-double Nation::distributeJobs(std::map<WorkerEducation, std::map<WorkerType, double>>& actualJobDist,
-                              std::map<WorkerType, double> availableJobsDist,
-                              std::map<WorkerEducation, double> educationDist) {
-    WorkerEducation currentEducation = BEST_EDUCATION;
-    std::map<WorkerType, double> jobsFilled;
-    double minRatio = 1;
-    bool outOfWorkers = false;
-    bool outOfJobs = false;
-    for (auto it = availableJobsDist.rbegin(); it != availableJobsDist.rend(); it++) {
-        // Distribute jobs in order of skill
-        WorkerType job = it->first;
-        double numJobs = it->second;
-        while (true) {
-            if (Elector::canWorkJob(currentEducation, job)) {
-                double numWorkersLeft = educationDist.at(currentEducation);
-                if (numJobs > numWorkersLeft) {
-                    actualJobDist[currentEducation][job] += numWorkersLeft;
-                    educationDist[currentEducation] -= numWorkersLeft;
-                    jobsFilled[job] += numWorkersLeft;
-                    numJobs -= numWorkersLeft;
-                } else if (numJobs <= numWorkersLeft) {
-                    actualJobDist[currentEducation][job] += numJobs;
-                    educationDist[currentEducation] -= numJobs;
-                    jobsFilled[job] += numJobs;
-                    break;
-                }
-            } else {
-                outOfWorkers = true;
-                double ratio = jobsFilled[job] / availableJobsDist[job];
-                if (ratio < minRatio) {
-                    minRatio = ratio;
-                }
-                break;
-            }
-
-            if (currentEducation == WORST_EDUCATION) {
-                break;
-            }
-            currentEducation = (WorkerEducation) (currentEducation - 1);
-        }
-    }
-    return minRatio;
 }
 
 void Nation::growPopulation() {
