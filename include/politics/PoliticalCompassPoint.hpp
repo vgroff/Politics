@@ -15,11 +15,10 @@ std::string politicalAxisToString(PoliticalAxis politicalAxis);
 class PoliticalCompassPoint {
 private:
     std::map<PoliticalAxis, double> point;
-    std::map<PoliticalAxis, double> strengths;
 public:
-    PoliticalCompassPoint(std::map<PoliticalAxis, double> point, std::map<PoliticalAxis, double> strengths);
+    PoliticalCompassPoint(std::map<PoliticalAxis, double> point);
     double getValue(PoliticalAxis axis);
-    double getDistanceTo(PoliticalCompassPoint point2);
+    double getDistanceTo(PoliticalCompassPoint point2,  std::map<PoliticalAxis, double> strengths);
     std::string toString();
 
     static std::map<PoliticalAxis, double> getDefaultStrengths();

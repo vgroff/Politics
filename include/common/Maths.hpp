@@ -21,6 +21,8 @@ public:
     Gaussian(double mean, double stdDev);
     void setMean(double stdDev);
     void setStdDev(double stdDev);
+    double getMean();
+    double getStdDev();
     double sample();
 };
 

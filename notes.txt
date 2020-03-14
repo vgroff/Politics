@@ -51,7 +51,7 @@
     - Need to work on utility calculation, for now just introduce housing and healthcare maybe?
     - Need to work on government intervention, taxes, policies ect...
     - Need to work on govenment setup, the parliament, the parties, the factions(?) etc..
-    - Write a toString() for ideology and then set up parties
+    - Do some cleanup on the Nation class before moving forward. Refactor into individual functions if possible
 
 CODE NOTES:
     - Should be writing tests ASAP!!! Should be commenting code!!

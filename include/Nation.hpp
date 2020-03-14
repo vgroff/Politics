@@ -5,6 +5,7 @@
 #include "economy/Industry.hpp"
 #include "electors/Elector.hpp"
 #include "politics/PoliticalCompassPointGenerator.hpp"
+#include "politics/Party.hpp"
 
 struct PopulationProperties {
     double population;
@@ -29,13 +30,18 @@ struct ResearchProperties {
     double research;
 };
 
+struct PoliticalProperties {
+    std::vector<Party> parties;
+};
+
 class Nation {
 private:
     std::string name;
     PopulationProperties populationProps;
-    ElectorProperties electorProperties;
+    ElectorProperties electorProps;
     CapitalistProperties capitalistProps;
     ResearchProperties researchProps;
+    PoliticalProperties politicalProps;
     Industry privateIndustry;
     double capitalInTheBank = 0;
 
@@ -54,12 +60,14 @@ private:
                           std::map<WorkerType, double> availableJobsDist,
                           std::map<WorkerEducation, double> educationDist);
     void capitalistsInvest();
+    void politicsTurn();
 public:
     Nation(std::string name, 
            PopulationProperties populationProperties, 
            ElectorProperties electorProperties, 
            CapitalistProperties capitalistProperties, 
            ResearchProperties researchProps,
+           PoliticalProperties politicalProps,
            Industry privateIndustry);
     void runIndustryTurn();
 

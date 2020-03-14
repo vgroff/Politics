@@ -63,3 +63,11 @@ void Gaussian::setStdDev(double stdDev) {
     this->stdDev = stdDev;
     dist = std::normal_distribution<double>(mean, stdDev);
 }
+
+double Gaussian::getMean() {
+    return mean;
+}
+
+double Gaussian::getStdDev() {
+    return stdDev;
+}

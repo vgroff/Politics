@@ -4,6 +4,7 @@
 #include "../common/Date.hpp"
 #include "../politics/PoliticalCompassPoint.hpp"
 #include "../../include/politics/PoliticalCompassPointGenerator.hpp"
+#include "../../include/politics/Party.hpp"
 
 
 enum WorkerType {
@@ -39,7 +40,7 @@ private:
     double longTermUtility;
     WorkerType workerType = Unemployed;
     WorkerEducation workerEducation;
-    PoliticalCompassPoint baseIdeology;
+    PoliticalCompassPoint currentIdeology;
 public:
     double setUtility(double newUtility);
     double getCurrentUtility();
@@ -50,7 +51,9 @@ public:
     void setWorkerType(WorkerType workerType);
     bool canWorkJob(WorkerType jobType);
     std::string toString();
-    Elector(WorkerEducation workerEducation, double longTermUtility, PoliticalCompassPoint baseIdeology);
+    Elector(WorkerEducation workerEducation, double longTermUtility, PoliticalCompassPoint currentIdeology);
+
+    std::shared_ptr<size_t> vote(const std::vector<Party>& choices);
 
     static bool canWorkJob(WorkerEducation workerEducation, WorkerType workerType);
 

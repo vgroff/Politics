@@ -12,7 +12,7 @@ public:
     PoliticalCompassDistribution(std::vector<Gaussian> gaussians,
                                  std::vector<double> baseDist,
                                  std::map<PoliticalAxis, std::vector<std::pair<std::vector<double>, double>>> correlations);
-    std::pair<size_t, double>  sample(std::map<PoliticalAxis, size_t> otherResults);
+    std::pair<size_t, double> sample(const std::map<PoliticalAxis, size_t>& otherResults);
 
     static std::vector<Gaussian> generateGaussians(double mean, 
                                                     double stdDevs, 

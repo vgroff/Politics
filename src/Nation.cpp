@@ -7,17 +7,19 @@
 
 Nation::Nation(std::string name, 
                PopulationProperties populationProperties,
-               ElectorProperties electorProperties, 
+               ElectorProperties electorProps, 
                CapitalistProperties capitalistProps, 
                ResearchProperties researchProps,
+               PoliticalProperties politicalProps,
                Industry privateIndustry)
     : name(name), 
     populationProps(populationProperties), 
-    electorProperties(electorProperties), 
+    electorProps(electorProps), 
     capitalistProps(capitalistProps),
     researchProps(researchProps),
+    politicalProps(politicalProps),
     privateIndustry(privateIndustry) {    
-    if (sumsToOne(electorProperties.workerEducation) == false) {
+    if (sumsToOne(electorProps.workerEducation) == false) {
         throw std::invalid_argument("Worker education does not sum to one");
     }
 }
@@ -43,15 +45,40 @@ void Nation::runIndustryTurn() {
     std::cout << "Utilities: " << std::endl;
     for (std::pair<WorkerType, double> wagePair : wages) {
         double utility = getUtility(wagePair.second);
-        for (auto& elector : electorProperties.electors) {
+        for (auto& elector : electorProps.electors) {
             if (wagePair.first == elector.getWorkerType()) {
                 elector.setUtility(utility);
-                elector.toString();
             }
         }
     }
     std::cout << std::endl;
     capitalistsInvest();
+    politicsTurn();
+}
+
+void Nation::politicsTurn() {
+    std::vector<double> voteShare(politicalProps.parties.size());
+    double blankVotes = 0;
+    for (auto elector : electorProps.electors) {
+        std::cout << elector.toString();
+        auto result = elector.vote(politicalProps.parties);
+        std::cout << "Voted for: ";
+        if (result == nullptr) {
+            std::cout << "Nobody" << std::endl;
+            blankVotes += 1;
+        } else {
+            std::cout << politicalProps.parties[*result].getName() << std::endl;
+            voteShare[*result] += 1;
+        }
+        std::cout << std::endl;
+    }
+    double sizeOfElectorate = electorProps.electors.size();
+    std::cout << "Vote Share: " << std::endl;
+    std::cout << "Blank: " << blankVotes/sizeOfElectorate << std::endl;
+    for (size_t i = 0; i < politicalProps.parties.size(); i++) {
+        const Party& party = politicalProps.parties[i];
+        std::cout << party.getName() << ": " << voteShare[i]/sizeOfElectorate << std::endl;
+    }
 }
 
 void Nation::capitalistsInvest() {
@@ -110,20 +137,20 @@ double Nation::getProductivityInvestement(double investement) {
 
 void Nation::distributeJobsToElectors(std::map<WorkerEducation, std::map<WorkerType, double>> jobDist) {
     double chanceJobRedistributed = 1;
-    if (electorProperties.jobsDistributed == true) {
-        chanceJobRedistributed = electorProperties.chanceJobRedistributed;
+    if (electorProps.jobsDistributed == true) {
+        chanceJobRedistributed = electorProps.chanceJobRedistributed;
     } else {
-        electorProperties.jobsDistributed = true;
+        electorProps.jobsDistributed = true;
     }
-    for (size_t i = 0; i < electorProperties.electors.size(); i++) {
+    for (size_t i = 0; i < electorProps.electors.size(); i++) {
         if (coinFlip(chanceJobRedistributed)) {
-            auto jobDistPair = jobDist.find(electorProperties.electors[i].getWorkerEducation());
+            auto jobDistPair = jobDist.find(electorProps.electors[i].getWorkerEducation());
             if (jobDistPair != jobDist.end()) {
                 auto job = coinFlip(jobDistPair->second);
-                electorProperties.electors[i].setWorkerType(job);
+                electorProps.electors[i].setWorkerType(job);
                 std::cout << "Job is now " << workerTypeToString(job) << std::endl;;
             } else {
-                electorProperties.electors[i].setWorkerType(Unemployed);
+                electorProps.electors[i].setWorkerType(Unemployed);
             }
         }
     }
@@ -131,7 +158,7 @@ void Nation::distributeJobsToElectors(std::map<WorkerEducation, std::map<WorkerT
 
 std::map<WorkerEducation, std::map<WorkerType, double>> Nation::calculateJobDistribution() {
     std::map<WorkerType, double> theoreticalJobDist = privateIndustry.getWorkerDistribution();
-    std::map<WorkerEducation, double> educationDist = electorProperties.workerEducation;
+    std::map<WorkerEducation, double> educationDist = electorProps.workerEducation;
     double workingRate = populationProps.workingPopulationRate;
     double workingPopulation = getWorkingPopulation();
     double baseUnemployement = populationProps.baseUnemployementRate;
@@ -189,7 +216,7 @@ std::map<WorkerEducation, std::map<WorkerType, double>> Nation::calculateJobDist
         for (auto& workerPair: workerJobDist.second) {
             sum += workerPair.second;
         }
-        double diff = electorProperties.workerEducation.at(workerJobDist.first) - sum;
+        double diff = electorProps.workerEducation.at(workerJobDist.first) - sum;
         if (diff > 0.0001) {
             // If there are workers left over, the rest are unemployed
             workerJobDist.second[Unemployed] += diff;
@@ -197,7 +224,7 @@ std::map<WorkerEducation, std::map<WorkerType, double>> Nation::calculateJobDist
             std::logic_error("More jobs given to workers than workers actually exist");
         }
         for (auto& workerPair: workerJobDist.second) {
-            workerPair.second = workerPair.second / electorProperties.workerEducation.at(workerJobDist.first);
+            workerPair.second = workerPair.second / electorProps.workerEducation.at(workerJobDist.first);
         }
     }
     return actualJobDist;
@@ -278,7 +305,7 @@ Nation Nation::testSetupSingleNation() {
         .workingPopulationRate = 0.65,
     };
     std::map<WorkerEducation, double> workerEducationMap = {{University, 0.25}, {HighSchool, 0.5}, {School, 0.25}};
-    auto electorsVec = Elector::generateTestElectors(2, 
+    auto electorsVec = Elector::generateTestElectors(2000, 
                                                 workerEducationMap,
                                                 {{University, 0.7}, {HighSchool, 0.5}, {School, 0.3}},
                                                 PoliticalCompassPointGenerator::testSetup());
@@ -295,12 +322,19 @@ Nation Nation::testSetupSingleNation() {
     ResearchProperties researchProps {
         .research = 1.06
     };
+    PoliticalCompassPoint labourIdeology({{Capitalist, -0.3}, {Conservative, -0.5}, {Nationalist, -0.4}});
+    PoliticalCompassPoint libDemIdeology({{Capitalist, 0.2}, {Conservative, -0.2}, {Nationalist, -0.65}});
+    PoliticalCompassPoint toryIdeology({{Capitalist, 0.45}, {Conservative, 0.35}, {Nationalist, 0.45}});
+    PoliticalProperties politicalProps {
+        .parties = {Party("Labour", labourIdeology), Party("Liberal Democrats", libDemIdeology), Party("Conservative", toryIdeology)}
+    };
 
     Nation nation("United Kingdom",
                   props,
                   electors,
                   capitalistProps,
                   researchProps,
+                  politicalProps,
                   Industry::testSetup());
     return nation;
 }

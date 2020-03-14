@@ -1,4 +1,5 @@
 #include "../../include/electors/Elector.hpp"
+#include "../../include/politics/Party.hpp"
 #include "../../include/common/Maths.hpp"
 #include<iostream>
 #include<sstream>
@@ -28,18 +29,39 @@ std::string workerEducationToString(WorkerEducation workerEducation) {
 }
 
 
-Elector::Elector(WorkerEducation workerEducation, double longTermUtility, PoliticalCompassPoint baseIdeology) 
+Elector::Elector(WorkerEducation workerEducation, double longTermUtility, PoliticalCompassPoint currentIdeology) 
     : longTermUtility(longTermUtility), 
     shortTermUtility(longTermUtility), 
     currentUtility(longTermUtility),
     workerEducation(workerEducation),
-    baseIdeology(baseIdeology) {
+    currentIdeology(currentIdeology) {
 
 };
 
+// TODO: Overload this function with voting for an MP
+// TODO: Overload this function for tactical voting (feed in polls)
+std::shared_ptr<size_t> Elector::vote(const std::vector<Party>& choices) {
+    const double min = 0.14;
+    double bestScore = min + 0.1;
+    std::shared_ptr<size_t> result = nullptr;
+    for (size_t i = 0; i < choices.size(); i++) {
+        Party party = choices[i];
+        double score = currentIdeology.getDistanceTo(party.getCurrentIdeology(), PoliticalCompassPoint::getDefaultStrengths());
+        std::cout << score << std::endl;
+        if (score < bestScore) {
+            bestScore = score;
+            result = std::make_shared<size_t>(i);
+        }
+    }
+    if (bestScore > min) {
+        return nullptr;
+    }
+    return result;
+}
+
 std::string Elector::toString() {
     std::ostringstream strStream;
-    strStream << "Ideology: " << baseIdeology.toString() << std::endl;
+    strStream << "Ideology: " << currentIdeology.toString() << std::endl;
     strStream << "Utility: " << currentUtility << ", " << shortTermUtility << ", " << longTermUtility << std::endl;
     return strStream.str();
 }
