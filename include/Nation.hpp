@@ -34,23 +34,10 @@ struct PoliticalProperties {
     std::vector<Party> parties;
 };
 
-struct TaxLaws {
-    double consumptionTax;
-    std::vector<std::pair<double, double>> incomeTaxBrackets;
-};
-
-struct WelfareLaws {
-    double welfareAmount;
-};
-
-struct LabourLaws {
-    double strength;
-};
-
 struct Laws {
-    TaxLaws taxlaws;
-    WelfareLaws welfareLaws;
+    BudgetLaws BudgetLaws;
     LabourLaws labourLaws;
+    CriminalLaws criminalLaws;
 };
 // Have Bill class that (see notez)
 

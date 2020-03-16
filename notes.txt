@@ -35,7 +35,7 @@
         - Capital will also need to know if there is manpower or goods shortages, as this will affect how they invest
     - Production units are converted back into different needs following some utility hierarchy. Government can then
     subsidies the cost of certain needs. Needs can be broken down into several levels and the utility can be completed step
-    by step, with a greedy algorithm making the best current choice
+    by step, with a greedy algorthm making the best current choice
     - So, main event loop goes:
         - Industry produces. Then Capital re-invests and Pops consume. Taxes and subsidies are applied during this process.
     - Investement becomes increasingly expensive as more is invested within a single turn (?)

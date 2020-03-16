@@ -319,7 +319,7 @@ Nation Nation::testSetupSingleNation() {
     };
     CapitalistProperties capitalistProps {
         .numCapitalists = 0.3,
-        .minUtility = 0.8
+        .minUtility = 0.85
     };
     ResearchProperties researchProps {
         .research = 1.06
@@ -331,12 +331,15 @@ Nation Nation::testSetupSingleNation() {
         .parties = {Party("Labour", labourIdeology), Party("Liberal Democrats", libDemIdeology), Party("Conservative", toryIdeology)}
     };
 
+    Laws laws;
+
     Nation nation("United Kingdom",
                   props,
                   electors,
                   capitalistProps,
                   researchProps,
                   politicalProps,
+                  laws,
                   Industry::testSetup());
     return nation;
 }

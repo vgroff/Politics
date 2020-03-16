@@ -73,7 +73,7 @@ PoliticalCompassPoint PoliticalCompassPointGenerator::sample() {
 
 PoliticalCompassPointGenerator PoliticalCompassPointGenerator::testSetup() {
     std::vector<double> evenArray = {1.0/3, 1.0/3, 1.0/3};
-    std::vector<double> normalArray = {0.4, 0.2, 0.4};
+    std::vector<double> normalArray = {0.38, 0.24, 0.38};
     std::vector<double> skewProgArray = {0.6, 0.25, 0.15};
     std::vector<double> skewReactionaryArray = {0.15, 0.25, 0.6};
     std::vector<double> skewAwayFromCentre = {0.4, 0.2, 0.4};
@@ -81,8 +81,8 @@ PoliticalCompassPointGenerator PoliticalCompassPointGenerator::testSetup() {
     auto conservativeGaussian = PoliticalCompassDistribution::generateGaussians(0.1, 0.35, 0.4);
     auto nationalistGaussian = PoliticalCompassDistribution::generateGaussians(0.05, 0.3, 0.35);
     std::map<PoliticalAxis, PoliticalCompassDistribution> politicalCompassDists = {
-        {Capitalist, PoliticalCompassDistribution(capitalistGaussian, evenArray, {})},
-        {Conservative, PoliticalCompassDistribution(conservativeGaussian, evenArray, {{Capitalist, {{skewProgArray, 2}, {evenArray, 0}, {skewReactionaryArray, 2}}}})},
+        {Capitalist, PoliticalCompassDistribution(capitalistGaussian, normalArray, {})},
+        {Conservative, PoliticalCompassDistribution(conservativeGaussian, normalArray, {{Capitalist, {{skewProgArray, 2}, {evenArray, 0}, {skewReactionaryArray, 2}}}})},
         {Nationalist, PoliticalCompassDistribution(nationalistGaussian, normalArray, {{Capitalist, {{skewProgArray, 2}, {skewProgArray, 1}, {evenArray, 1}}},
                                                                                       {Conservative, {{skewProgArray, 3}, {normalArray, 0}, {skewReactionaryArray, 3}}}})},
     };
