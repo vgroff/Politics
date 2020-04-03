@@ -1,4 +1,5 @@
 #pragma once
+#include<map>
 
 enum Commodity {
     Food = 0,
@@ -14,6 +15,8 @@ enum CommodityLevel {
     Luxury,
 };
 const int NUM_COMMODITY_LEVELS = Luxury + 1;
+
+std::map<Commodity, std::map<CommodityLevel, double>> flatConsumptionTax(double rate);
 
 double getUtility(double income);
 double inverseUtility(double income);

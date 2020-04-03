@@ -27,10 +27,11 @@ void BudgetLaws::setNewConsumptionTax(std::map<Commodity, std::map<CommodityLeve
         throw std::invalid_argument("Consumption tax does not have the correct number of commodities");
     }
     for (const auto& [commodity, commodityLevelTax] : newConsumptionTax) {
+        std::cout << commodityLevelTax.size() << std::endl;
         if (commodityLevelTax.size() != NUM_COMMODITY_LEVELS) {
             throw std::invalid_argument("Consumption tax does not have the correct number of commodity levels");
         }
-        for (const auto& [commodityLevel, commodityTax] : commodityLevelTax)
+        for (const auto& [commodityLevel, commodityTax] : commodityLevelTax) {
             if (commodityTax < 0) {
                 throw std::invalid_argument("Consumption tax must be positive (less than 1 if a subsidy)");
             }
@@ -52,28 +53,28 @@ std::map<Commodity, std::map<CommodityLevel, double>> BudgetLaws::getNewPrices(s
 
 double BudgetLaws::getIncomeTax(double income) {
     double tax = 0;
-    auto it = incomeTaxBrackets.begin()
+    auto it = incomeTaxBrackets.begin();
     for (const auto& [taxLevel, taxRate] : incomeTaxBrackets) {
         it++;
         double nextTaxLevel = it->first;
         if (nextTaxLevel < income) {
-            tax += (nextTaxLevel - taxLevel) * taxRate
+            tax += (nextTaxLevel - taxLevel) * taxRate;
         } else {
-            tax += (income - taxLevel) * taxRate
+            tax += (income - taxLevel) * taxRate;
             break;
         }
     }
     return tax;
 }
 
-double BugetLaws::getWelfare() {
+double BudgetLaws::getWelfare() {
     return welfareAmount;
 }
 
-double BugetLaws::getDividendTax(double dividend) {
+double BudgetLaws::getDividendTax(double dividend) {
     return dividendTax * dividend;
 }
 
-double BugetLaws::getCapitalGainsTax(double capitalGains) {
+double BudgetLaws::getCapitalGainsTax(double capitalGains) {
     return capitalGainsTax * capitalGains;
 }

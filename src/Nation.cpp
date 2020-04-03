@@ -3,6 +3,8 @@
 #include "../include/common/Date.hpp"
 #include "../include/common/Maths.hpp"
 #include "../include/politics/PoliticalCompassPointGenerator.hpp"
+#include "../include/electors/Utility.hpp"
+
 #include<iostream>
 
 // Distribute available jobs amongst educations. Actual job dist is the output, along with the minimum ratio of jobs filled (due to lack of education)
@@ -331,7 +333,13 @@ Nation Nation::testSetupSingleNation() {
         .parties = {Party("Labour", labourIdeology), Party("Liberal Democrats", libDemIdeology), Party("Conservative", toryIdeology)}
     };
 
-    Laws laws;
+    BudgetLaws budgetLaws(flatConsumptionTax(0.0),
+                            {},
+                            0,
+                            0);
+    Laws laws = {
+        .budgetLaws = budgetLaws
+    };
 
     Nation nation("United Kingdom",
                   props,

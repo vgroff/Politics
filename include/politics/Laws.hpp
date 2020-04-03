@@ -1,11 +1,11 @@
 #pragma once
-#include "../electors/Electors.hpp"
+#include "../electors/Elector.hpp"
 #include "../electors/Utility.hpp"
 #include "./PoliticalCompassPoint.hpp"
 #include<vector>
 #include<map>
 
-struct BudgetLaws {
+class BudgetLaws {
 private:
     // Subsidies in here too
     std::map<Commodity, std::map<CommodityLevel, double>> consumptionTax;
@@ -15,7 +15,7 @@ private:
 
     double welfareAmount;
 
-    double getRadicalness(const& BudgetLaws);
+    double getRadicalness(const BudgetLaws& currentBudgetLaws);
     double getCapitalismness(const std::map<WorkerType, double>& wages);
 public:
     BudgetLaws(std::map<Commodity, std::map<CommodityLevel, double>>  consumptionTax,
@@ -32,7 +32,7 @@ public:
     double getWelfare();
     std::map<Commodity, std::map<CommodityLevel, double>> getNewPrices(std::map<Commodity, std::map<CommodityLevel, double>> oldPrices);
 
-    PoliticalPointCompass getIdeology(const& BudgetLaws, const std::map<WorkerType, double>& wages);
+    PoliticalCompassPoint getIdeology(const BudgetLaws& budgetLaws, const std::map<WorkerType, double>& wages);
 };
 
 struct LabourLaws {

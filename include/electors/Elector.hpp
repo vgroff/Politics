@@ -42,7 +42,7 @@ private:
     WorkerEducation workerEducation;
     PoliticalCompassPoint currentIdeology;
 public:
-    double setUtility(double newUtility);
+    void setUtility(double newUtility);
     double getCurrentUtility();
     double getShortTermUtility();
     double getLongTermUtility();

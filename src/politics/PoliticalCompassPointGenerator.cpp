@@ -74,17 +74,17 @@ PoliticalCompassPoint PoliticalCompassPointGenerator::sample() {
 PoliticalCompassPointGenerator PoliticalCompassPointGenerator::testSetup() {
     std::vector<double> evenArray = {1.0/3, 1.0/3, 1.0/3};
     std::vector<double> normalArray = {0.38, 0.24, 0.38};
-    std::vector<double> skewProgArray = {0.6, 0.25, 0.15};
-    std::vector<double> skewReactionaryArray = {0.15, 0.25, 0.6};
+    std::vector<double> skewProgArray = {0.63, 0.25, 0.12};
+    std::vector<double> skewReactionaryArray = {0.12, 0.25, 0.63};
     std::vector<double> skewAwayFromCentre = {0.4, 0.2, 0.4};
     auto capitalistGaussian = PoliticalCompassDistribution::generateGaussians(0.1, 0.2, 0.4);
-    auto conservativeGaussian = PoliticalCompassDistribution::generateGaussians(0.1, 0.35, 0.4);
+    auto conservativeGaussian = PoliticalCompassDistribution::generateGaussians(0.1, 0.3, 0.3);
     auto nationalistGaussian = PoliticalCompassDistribution::generateGaussians(0.05, 0.3, 0.35);
     std::map<PoliticalAxis, PoliticalCompassDistribution> politicalCompassDists = {
-        {Capitalist, PoliticalCompassDistribution(capitalistGaussian, normalArray, {})},
-        {Conservative, PoliticalCompassDistribution(conservativeGaussian, normalArray, {{Capitalist, {{skewProgArray, 2}, {evenArray, 0}, {skewReactionaryArray, 2}}}})},
-        {Nationalist, PoliticalCompassDistribution(nationalistGaussian, normalArray, {{Capitalist, {{skewProgArray, 2}, {skewProgArray, 1}, {evenArray, 1}}},
-                                                                                      {Conservative, {{skewProgArray, 3}, {normalArray, 0}, {skewReactionaryArray, 3}}}})},
+        {Conservative, PoliticalCompassDistribution(conservativeGaussian, normalArray, {})},
+        {Capitalist, PoliticalCompassDistribution(capitalistGaussian, normalArray, {{Conservative, {{skewProgArray, 3}, {evenArray, 0}, {skewReactionaryArray, 3}}}})},
+        {Nationalist, PoliticalCompassDistribution(nationalistGaussian, normalArray, {{Conservative, {{skewProgArray, 3}, {normalArray, 0}, {skewReactionaryArray, 3}}},
+                                                                                      {Capitalist, {{skewProgArray, 2}, {skewProgArray, 1}, {evenArray, 1}}}})},
     };
     PoliticalCompassPointGenerator p(politicalCompassDists);
     return p;

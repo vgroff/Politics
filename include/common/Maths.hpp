@@ -110,12 +110,15 @@ template<typename A>
 A coinFlip(const std::map<A, double>& probabilityDist) {
     double rand = random0to1() + 0.00001;
     double val = 0;
-    for (const auto& probDist : probabilityDist) {
-        val += probDist.second;
+    A currentVal;
+    for (const auto& [value, probability] : probabilityDist) {
+        currentVal = value;
+        val += probability;
         if (val >= rand) {
-            return probDist.first;
+            return value;
         }
     }
+    return currentVal;
 }
 
 size_t coinFlip(const std::vector<double> probabilityDist);
@@ -124,11 +127,12 @@ template<typename A>
 A coinFlip(const std::vector<std::pair<A, double>>& probabilityDist) {
     double rand = random0to1()+0.00001;
     double val = 0;
-    for (const auto& probDist : probabilityDist) {
-        val += probDist.second;
+    for (const auto& [value, probability] : probabilityDist) {
+        val += probability;
         if (val >= rand) {
-            return probDist.first;
+            return value;
         }
     }
+    return probabilityDist[probabilityDist.size() - 1].first;
 }
 

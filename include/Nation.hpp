@@ -6,6 +6,7 @@
 #include "electors/Elector.hpp"
 #include "politics/PoliticalCompassPointGenerator.hpp"
 #include "politics/Party.hpp"
+#include "politics/Laws.hpp"
 
 struct PopulationProperties {
     double population;
@@ -35,7 +36,7 @@ struct PoliticalProperties {
 };
 
 struct Laws {
-    BudgetLaws BudgetLaws;
+    BudgetLaws budgetLaws;
     LabourLaws labourLaws;
     CriminalLaws criminalLaws;
 };

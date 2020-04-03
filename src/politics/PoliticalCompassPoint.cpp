@@ -47,7 +47,7 @@ double PoliticalCompassPoint::getDistanceTo(PoliticalCompassPoint point2, std::m
         double value = pointPair.second;
         double absDiff = std::abs(value - point2.getValue(axis));
         double strength = strengths.at(pointPair.first);
-        sum += std::pow((absDiff/2), 1.25) * strength; // divide by 2 to force it between 0 and 1 before exponentiating
+        sum += std::pow((absDiff/2), 1.3) * strength; // divide by 2 to force it between 0 and 1 before exponentiating
         sumStrengths += strength;
     }
     return sum/sumStrengths;
@@ -67,8 +67,8 @@ std::string PoliticalCompassPoint::toString() {
 
 std::map<PoliticalAxis, double> PoliticalCompassPoint::getDefaultStrengths() {
     return {
+        {Conservative, 0.7},
         {Capitalist, 1.2},
-        {Conservative, 0.8},
         {Nationalist, 1.1}
     };
 }

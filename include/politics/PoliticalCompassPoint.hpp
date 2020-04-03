@@ -2,8 +2,8 @@
 #include<map>
 
 enum PoliticalAxis {
-    Capitalist = 0, // Socialist
-    Conservative, // Radical
+    Conservative = 0, // Radical
+    Capitalist, // Socialist
     Nationalist, // Internationalist
     Authoritarian, // Liberal
     Engaged, // Disinterested 

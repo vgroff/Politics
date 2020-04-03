@@ -1,5 +1,18 @@
 #include "../../include/electors/Utility.hpp"
 
+std::map<Commodity, std::map<CommodityLevel, double>> flatConsumptionTax(double rate) {
+    std::map<Commodity, std::map<CommodityLevel, double>> consumptionTaxMap;
+    for (size_t i = 0; i < NUM_COMMODITIES; i++) {
+        Commodity commodity = Commodity(i);
+        consumptionTaxMap[commodity] = {}; 
+        for (size_t j = 0; j < NUM_COMMODITY_LEVELS; j++) {
+            CommodityLevel commodityLevel = CommodityLevel(j);
+            consumptionTaxMap[commodity][commodityLevel] = rate; 
+        }
+    }
+    return consumptionTaxMap;
+}
+
 double getUtility(double income) {
     return 1 - 1/(1+(income*2));
 }

@@ -59,3 +59,7 @@
 CODE NOTES:
     - Should be writing tests ASAP!!! Should be commenting code!!
     - Should be pulling functionality out into independent funciton asap
+    - Start writing GUI
+    - Replace pairs with decompositions
+    - apply tax system
+    - change ideology system so that radical comes first
