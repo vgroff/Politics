@@ -42,15 +42,16 @@ double PoliticalCompassPoint::getValue(PoliticalAxis axis) {
 double PoliticalCompassPoint::getDistanceTo(PoliticalCompassPoint point2, std::map<PoliticalAxis, double> strengths) {
     double sum = 0;
     double sumStrengths = 0;
+    const double exponent = 1.4;
     for (const auto& pointPair : point) {
         PoliticalAxis axis = pointPair.first;
         double value = pointPair.second;
         double absDiff = std::abs(value - point2.getValue(axis));
         double strength = strengths.at(pointPair.first);
-        sum += std::pow((absDiff/2), 1.3) * strength; // divide by 2 to force it between 0 and 1 before exponentiating
+        sum += std::pow((absDiff/2), exponent) * strength; // divide by 2 to force it between 0 and 1 before exponentiating
         sumStrengths += strength;
     }
-    return sum/sumStrengths;
+    return std::pow(sum/sumStrengths, 1/exponent);
 }
 
 std::string PoliticalCompassPoint::toString() {
