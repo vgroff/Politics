@@ -19,7 +19,7 @@ struct ElectorProperties {
     std::vector<Elector> electors;
     std::map<WorkerEducation, double> workerEducation;
     bool jobsDistributed;
-    const double chanceJobRedistributed;
+    double chanceJobRedistributed;
 };
 
 struct CapitalistProperties {
