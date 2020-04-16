@@ -41,7 +41,7 @@ Elector::Elector(WorkerEducation workerEducation, double longTermUtility, Politi
 // TODO: Overload this function with voting for an MP
 // TODO: Overload this function for tactical voting (feed in polls)
 std::shared_ptr<size_t> Elector::vote(const std::vector<Party>& choices) {
-    const double min = 0.175;
+    const double min = 0.19;
     double bestScore = min + 0.1;
     std::shared_ptr<size_t> result = nullptr;
     for (size_t i = 0; i < choices.size(); i++) {
