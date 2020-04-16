@@ -4,7 +4,7 @@ project (MYGAME)
 set (EXECUTABLE_NAME "Politics")
 set (CMAKE_CXX_COMPILER "clang++")
 set (CMAKE_CXX_STANDARD 17)
-include_directories("include/" "usr/lib")
+include_directories("include/")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 set(CMAKE_BUILD_TYPE Debug)
 add_executable(politics "main.cpp")
@@ -21,14 +21,9 @@ set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF) 
 find_package(Boost 1.71.0) 
 
-find_package(wxWidgets COMPONENTS core base REQUIRED)
-include(${wxWidgets_USE_FILE})
-
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS}) 
+    target_link_libraries(politics ${Boost_LIBRARIES})
 endif()
-
-target_link_libraries(politics ${Boost_LIBRARIES} ${wxWidgets_LIBRARIES})
-
 
 add_custom_target(run "./politics")
