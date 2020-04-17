@@ -1,4 +1,5 @@
 #include "../include/Engine.hpp"
+#include "../include/Log.hpp"
 #include <iostream>
 
 Engine::Engine(time_point startingDate) 
@@ -8,7 +9,9 @@ Engine::Engine(time_point startingDate)
 
 void Engine::playTurn() {
     currentDate += hours(24*7);
-    std::cout << "\nToday is: " << currentDate << std::endl;
+    std::ostringstream oss;
+    oss << "Today is: " << currentDate;
+    Log::log(oss.str());
     playerNation.runIndustryTurn();
 }
 

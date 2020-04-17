@@ -9,4 +9,5 @@ target_sources(politics
     "${CMAKE_CURRENT_SOURCE_DIR}/Engine.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Nation.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/App.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Log.cpp"
 )

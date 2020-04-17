@@ -1,8 +1,5 @@
 #include "../include/App.hpp"
-#include "../include/Engine.hpp"
 
-
-QPointer<QTextEdit> App::messagesWidget = nullptr;
 
 App::App(QWidget *parent) 
     : QMainWindow(parent) {
@@ -10,15 +7,7 @@ App::App(QWidget *parent)
     setWindowTitle(QApplication::translate("toplevel", "Top-level widget"));
 }
 
-int App::setup() {
-    // Creates an instance of QApplication
-    // std::cout << std::setprecision(4);
-    // std::srand(38);
-    // Engine e = Engine::testSetup();
-    // for (int i = 0; i < 1; i++) {
-    //     e.playTurn();
-    // }
-
+void App::setupGUI() {
     innerWidget = QPointer<QWidget>(new QWidget(this));
     innerWidget->resize(appHeight, appWidth);
     mainSection = QPointer<QWidget>(new QWidget(innerWidget));
@@ -32,30 +21,45 @@ int App::setup() {
     mainSection->setStyleSheet("background:white;");
     bottomSection->setMinimumSize(appHeight, appWidth/10);
     bottomSection->setStyleSheet("background:blue;");
-    messagesWidget = textEditor;
 
     topLevelLayout = QPointer<QVBoxLayout>(new QVBoxLayout());
     topLevelLayout->addWidget(mainSection);
     topLevelLayout->addWidget(bottomSection);
     topLevelLayout->addWidget(textEditor);
 
-    App::log("next turn");
-
     QObject::connect(nextTurnButton, SIGNAL(clicked()), this, SLOT(nextTurnButtonClicked()));
 
     innerWidget->setLayout(topLevelLayout);
+}
 
+void App::setupLogger() {
+    auto self = this;
+    Log::setLogger([self](std::string text){
+        self->log(text);
+    });
+}
+
+void App::setupGame() {
+    std::cout << std::setprecision(4);
+    std::srand(38);
+    engine.playTurn();
+}
+
+int App::setup() {
+    setupGUI();
+    setupLogger();
+    setupGame();
     this->show();
     return 0;
 }
 
 void App::nextTurnButtonClicked() {
-    App::log("next turn");
+    engine.playTurn();
 }
 
 void App::log(std::string newLogText) {
-    if (messagesWidget) {
-        auto document = messagesWidget->document();
+    if (textEditor) {
+        auto document = textEditor->document();
         auto text = document->toPlainText();
         document->setPlainText(text + newLogText.c_str() + "\n");
     }
