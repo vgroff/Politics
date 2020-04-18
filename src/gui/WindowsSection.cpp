@@ -4,7 +4,8 @@ WindowsSection::WindowsSection(Engine *enginePtr, QWidget *parent)
     : QWidget(parent),
     enginePtr(enginePtr) {
 
-    setStyleSheet("background:white;");
+    setStyleSheet("background:blue;");
+    windowButton = QPointer<QPushButton>(new QPushButton(this));
 
 }
 

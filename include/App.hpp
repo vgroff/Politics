@@ -7,8 +7,8 @@
 class App : public QMainWindow {
     Q_OBJECT
 private:
-    static const int appHeight = 1200;
-    static const int appWidth  = 900;
+    static const int appHeight = 900;
+    static const int appWidth  = 1400;
     static App singletonApp;
 
     QPointer<QVBoxLayout> topLevelLayout;

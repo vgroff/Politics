@@ -309,7 +309,7 @@ Nation Nation::testSetupSingleNation() {
         .workingPopulationRate = 0.65,
     };
     std::map<WorkerEducation, double> workerEducationMap = {{University, 0.25}, {HighSchool, 0.5}, {School, 0.25}};
-    auto electorsVec = Elector::generateTestElectors(2000, 
+    auto electorsVec = Elector::generateTestElectors(200, 
                                                 workerEducationMap,
                                                 {{University, 0.7}, {HighSchool, 0.5}, {School, 0.3}},
                                                 PoliticalCompassPointGenerator::testSetup());
@@ -326,8 +326,8 @@ Nation Nation::testSetupSingleNation() {
     ResearchProperties researchProps {
         .research = 1.06
     };
-    PoliticalCompassPoint labourIdeology({{Capitalist, -0.3}, {Conservative, -0.5}, {Nationalist, -0.4}});
-    PoliticalCompassPoint libDemIdeology({{Capitalist, 0.2}, {Conservative, -0.2}, {Nationalist, -0.65}});
+    PoliticalCompassPoint labourIdeology({{Capitalist, -0.28}, {Conservative, -0.32}, {Nationalist, -0.4}});
+    PoliticalCompassPoint libDemIdeology({{Capitalist, 0.15}, {Conservative, -0.15}, {Nationalist, -0.6}});
     PoliticalCompassPoint toryIdeology({{Capitalist, 0.45}, {Conservative, 0.35}, {Nationalist, 0.45}});
     PoliticalProperties politicalProps {
         .parties = {Party("Labour", labourIdeology), Party("Liberal Democrats", libDemIdeology), Party("Conservative", toryIdeology)}

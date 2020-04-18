@@ -68,7 +68,7 @@ std::string PoliticalCompassPoint::toString() {
 
 std::map<PoliticalAxis, double> PoliticalCompassPoint::getDefaultStrengths() {
     return {
-        {Conservative, 0.7},
+        {Conservative, 0.65},
         {Capitalist, 1.2},
         {Nationalist, 1.1}
     };

@@ -6,7 +6,7 @@ BottomSection::BottomSection(std::function<void(BottomSectionEvent)> eventsHandl
     setStyleSheet("background:blue;");
 
     topLevelLayout = QPointer<QHBoxLayout>(new QHBoxLayout());
-    nextTurnButton = QPointer<QPushButton>(new QPushButton());
+    nextTurnButton = QPointer<QPushButton>(new QPushButton("Next turn"));
     topLevelLayout->addWidget(nextTurnButton);
     setLayout(topLevelLayout);
 

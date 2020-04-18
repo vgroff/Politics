@@ -15,5 +15,5 @@ private:
 
     void bottomSectionEventsHandler(BottomSectionEvent event);
 public:
-    explicit MainSection(int minSizeHeight, int minSizeWidth, Engine *enginePtr, QWidget *parent = nullptr);
+    explicit MainSection( int minSizeWidth, int minSizeHeight, Engine *enginePtr, QWidget *parent = nullptr);
 };

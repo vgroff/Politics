@@ -3,16 +3,17 @@
 
 App::App(QWidget *parent) 
     : QMainWindow(parent) {
-    resize(appHeight, appWidth);
+    resize(appWidth+20, appHeight+10);
     setWindowTitle(QApplication::translate("toplevel", "Top-level widget"));
 }
 
 void App::setupGUI() {
     innerWidget = QPointer<QWidget>(new QWidget(this));
-    innerWidget->resize(appHeight, appWidth);
-    mainSection = QPointer<MainSection>(new MainSection(appHeight, appWidth*3/4, &engine, innerWidget));
+    innerWidget->resize(appWidth, appHeight);
+    mainSection = QPointer<MainSection>(new MainSection(appWidth, appHeight*3/4, &engine, innerWidget));
 
     textEditor = QPointer<QTextEdit>(new QTextEdit());
+    textEditor->setMinimumSize(appWidth, appHeight*1/4);
 
     topLevelLayout = QPointer<QVBoxLayout>(new QVBoxLayout());
     topLevelLayout->addWidget(mainSection);
@@ -37,7 +38,7 @@ void App::setupGame() {
 int App::setup() {
     setupGUI();
     setupLogger();
-    setupGame();
+    //setupGame();
     this->show();
     return 0;
 }
