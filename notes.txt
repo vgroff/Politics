@@ -63,3 +63,11 @@ CODE NOTES:
     - Replace pairs with decompositions
     - apply tax system
     - change ideology system so that radical comes first
+
+suppose we have a cabinet, made up of ministers that are actual electors
+can this just be several raw pointers? the pointers would be pointing to objects in electors vector
+whos address may change. Othewise it could hold some id, and query the vector using the id. Maybe the vector is a map instead
+Is any of this going to be more efficient than just dynamically allocating objects? At least the memory is contiguous
+if we dont allocate objects
+If we hold an id to query the electors and make it into a map instead, we can just get passed in const refs of the elector map in
+order to act on it

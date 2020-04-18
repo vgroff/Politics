@@ -10,24 +10,13 @@ App::App(QWidget *parent)
 void App::setupGUI() {
     innerWidget = QPointer<QWidget>(new QWidget(this));
     innerWidget->resize(appHeight, appWidth);
-    mainSection = QPointer<QWidget>(new QWidget(innerWidget));
-    bottomSection = QPointer<QWidget>(new QWidget(innerWidget));
-
-    nextTurnButton = QPointer<QPushButton>(new QPushButton("Next turn", bottomSection));
+    mainSection = QPointer<MainSection>(new MainSection(appHeight, appWidth*3/4, &engine, innerWidget));
 
     textEditor = QPointer<QTextEdit>(new QTextEdit());
 
-    mainSection->setMinimumSize(appHeight, appWidth*2/3);
-    mainSection->setStyleSheet("background:white;");
-    bottomSection->setMinimumSize(appHeight, appWidth/10);
-    bottomSection->setStyleSheet("background:blue;");
-
     topLevelLayout = QPointer<QVBoxLayout>(new QVBoxLayout());
     topLevelLayout->addWidget(mainSection);
-    topLevelLayout->addWidget(bottomSection);
     topLevelLayout->addWidget(textEditor);
-
-    QObject::connect(nextTurnButton, SIGNAL(clicked()), this, SLOT(nextTurnButtonClicked()));
 
     innerWidget->setLayout(topLevelLayout);
 }

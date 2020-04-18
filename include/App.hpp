@@ -1,6 +1,7 @@
 #pragma once 
 #include <QtWidgets>
 #include "Engine.hpp"
+#include "gui/MainSection.hpp"
 #include "Log.hpp"
 
 class App : public QMainWindow {
@@ -12,9 +13,8 @@ private:
 
     QPointer<QVBoxLayout> topLevelLayout;
     QPointer<QWidget> innerWidget;
-    QPointer<QWidget> mainSection;
-    QPointer<QWidget> bottomSection;
-    QPointer<QPushButton> nextTurnButton;
+
+    QPointer<MainSection> mainSection;
     QPointer<QTextEdit> textEditor;
 
     Engine engine = Engine::testSetup();
