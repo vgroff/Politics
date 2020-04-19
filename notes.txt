@@ -71,3 +71,4 @@ Is any of this going to be more efficient than just dynamically allocating objec
 if we dont allocate objects
 If we hold an id to query the electors and make it into a map instead, we can just get passed in const refs of the elector map in
 order to act on it
+I DONT NEED IDs BECAUSE NOTHING WILL CHANGE OUTSIDE OF WHEN THE TURN CHANGES, AND THAT STUFF CAN ALL BE REFRESHED AT THE START OF THE NEW TURN TO MAKE SURE OBJECT STILL VALID

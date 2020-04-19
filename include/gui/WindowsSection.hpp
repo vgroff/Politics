@@ -8,7 +8,10 @@ class WindowsSection : public QWidget {
 private:
     Engine* enginePtr;
     QPointer<QPushButton> windowButton;
+    QPointer<QDialog> window;
 
 public:
     explicit WindowsSection(Engine *enginePtr, QWidget *parent = nullptr);
+
+    void showNation();
 };

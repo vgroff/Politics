@@ -6,10 +6,11 @@
 class Engine {
 private:
     time_point currentDate;
-    Nation playerNation = Nation::testSetupSingleNation();
+    
 public:
     Engine(time_point startingDate);
     void playTurn();
+    Nation playerNation = Nation::testSetupSingleNation();
 
     static Engine testSetup();
 };

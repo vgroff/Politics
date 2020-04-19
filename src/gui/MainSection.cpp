@@ -26,5 +26,7 @@ MainSection::MainSection(int minSizeWidth, int minSizeHeight,Engine* enginePtr, 
 void MainSection::bottomSectionEventsHandler(BottomSectionEvent event) {
     if (event == nextTurnEvent) {
         enginePtr->playTurn();
+    } else if (event == showNationEvent) {
+        windowsSection->showNation();
     }
 }

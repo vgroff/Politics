@@ -7,12 +7,17 @@ BottomSection::BottomSection(std::function<void(BottomSectionEvent)> eventsHandl
 
     topLevelLayout = QPointer<QHBoxLayout>(new QHBoxLayout());
     nextTurnButton = QPointer<QPushButton>(new QPushButton("Next turn"));
+    showNationButton = QPointer<QPushButton>(new QPushButton("Next turn"));
     topLevelLayout->addWidget(nextTurnButton);
+    topLevelLayout->addWidget(showNationButton);
     setLayout(topLevelLayout);
 
     auto self = this;
     QObject::connect(nextTurnButton, &QPushButton::clicked, [self]() {
         self->eventsHandler(nextTurnEvent);
+    });
+    QObject::connect(showNationButton, &QPushButton::clicked, [self]() {
+        self->eventsHandler(showNationEvent);
     });
 }
 
