@@ -25,7 +25,7 @@ set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF) 
 find_package(Boost 1.71.0) 
 
-set(Qt5_DIR "/usr/local/opt/qt/lib/cmake/") 
+set(Qt5_DIR "~/Qt/5.15.1/clang_64/lib/cmake") 
 find_package(Qt5 HINTS "${Qt5_DIR}" COMPONENTS Core Widgets REQUIRED)
 
 if(Boost_FOUND)
