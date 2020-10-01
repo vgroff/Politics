@@ -24,6 +24,7 @@ MainSection::MainSection(int minSizeWidth, int minSizeHeight,Engine* enginePtr, 
 }
 
 void MainSection::bottomSectionEventsHandler(BottomSectionEvent event) {
+    std::cout << "event handled" << event << std::endl;
     if (event == nextTurnEvent) {
         enginePtr->playTurn();
     } else if (event == showNationEvent) {
