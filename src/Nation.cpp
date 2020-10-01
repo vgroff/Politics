@@ -73,6 +73,10 @@ Nation::Nation(std::string name,
     }
 }
 
+std::string Nation::getName() {
+    return name;
+}
+
 void Nation::runIndustryTurn() {
     std::cout << "Research level: " << researchProps.research << std::endl;
     double productivityDiff = (researchProps.research - privateIndustry.getProductivity())/researchProps.research;
@@ -185,7 +189,7 @@ double Nation::getProductivityInvestement(double investement) {
 }
 
 void Nation::distributeJobsToElectors(std::map<WorkerEducation, std::map<WorkerType, double>> jobDist) {
-    double chanceJobRedistributed = 1;
+    double chanceJobRedistributed = 0.2;
     if (electorProps.jobsDistributed == true) {
         chanceJobRedistributed = electorProps.chanceJobRedistributed;
     } else {

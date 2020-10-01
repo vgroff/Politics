@@ -77,3 +77,5 @@ WILL THE NATION GUI PASS THINGS DOWN TO ITS CHILDEN?
 CLASS REFERENCES ACTUALLY THE SOLUTION!!!!!
 https://stackoverflow.com/questions/7051185/separation-of-logic-and-ui
 https://stackoverflow.com/questions/12387239/reference-member-variables-as-class-members
+
+ALL references should really just be shared/weak pointers. End of. It will simlify everything

@@ -11,6 +11,6 @@ WindowsSection::WindowsSection(Engine *enginePtr, QWidget *parent)
 }
 
 void WindowsSection::showNation() {
-    window = QPointer<QDialog>(new NationWindow(&(enginePtr->playerNation), this));
+    window = QPointer<QDialog>(new NationWindow(enginePtr->playerNation, this));
     window->show();
 }

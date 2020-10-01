@@ -1,11 +1,12 @@
 #include "../../../include/gui/windows/NationWindow.hpp"
 
-NationWindow::NationWindow(Nation *nationPtr, QWidget *parent)
+NationWindow::NationWindow(Nation& nation, QWidget *parent)
     : QDialog(parent),
-    nationPtr(nationPtr) {
+    nation(nation) {
 
     setWindowFlag(Qt::WindowStaysOnTopHint);
     setStyleSheet("background:blue;");
+    nationName = QPointer<QLabel>(new QLabel(nation.name.c_str(), this));
     windowButton = QPointer<QPushButton>(new QPushButton("button", this));
     show();
 }

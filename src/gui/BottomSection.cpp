@@ -14,7 +14,6 @@ BottomSection::BottomSection(std::function<void(BottomSectionEvent)> eventsHandl
 
     auto self = this;
     QObject::connect(nextTurnButton, &QPushButton::clicked, [self]() {
-        std::cout << "triggered" << std::endl;
         self->eventsHandler(nextTurnEvent);
     });
     QObject::connect(showNationButton, &QPushButton::clicked, [self]() {

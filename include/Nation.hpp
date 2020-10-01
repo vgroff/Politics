@@ -43,6 +43,7 @@ struct Laws {
 // Have Bill class that (see notez)
 
 class Nation {
+    friend class NationWindow;
 private:
     std::string name;
     PopulationProperties populationProps;
@@ -77,6 +78,7 @@ public:
            Laws laws,
            Industry privateIndustry);
     void runIndustryTurn();
+    std::string getName();
 
     static Nation testSetupSingleNation();
 };

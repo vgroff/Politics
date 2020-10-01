@@ -6,9 +6,10 @@
 class NationWindow : public QDialog {
     Q_OBJECT
 private:
-    Nation* nationPtr;
+    Nation& nation;
+    QPointer<QLabel> nationName;
     QPointer<QPushButton> windowButton;
 
 public:
-    explicit NationWindow(Nation* nationPtr, QWidget *parent = nullptr);
+    explicit NationWindow(Nation& nation, QWidget *parent = nullptr);
 };
