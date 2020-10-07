@@ -12,7 +12,7 @@ void Engine::playTurn() {
     std::ostringstream oss;
     oss << "Today is: " << currentDate;
     Log::log(oss.str());
-    playerNation.runIndustryTurn();
+    playerNation->runIndustryTurn();
 }
 
 Engine Engine::testSetup() {

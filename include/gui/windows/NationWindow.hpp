@@ -1,15 +1,18 @@
 #pragma once
 #include "../../Nation.hpp"
-#include <QtWidgets>
+#include "./Window.hpp"
 
 
-class NationWindow : public QDialog {
+class NationWindow : public Window {
     Q_OBJECT
 private:
-    Nation& nation;
+    std::weak_ptr<Nation> nationWeakPtr;
+    QPointer<QVBoxLayout> topLevelLayout;
     QPointer<QLabel> nationName;
     QPointer<QPushButton> windowButton;
 
+    void refreshWindow() override;
+
 public:
-    explicit NationWindow(Nation& nation, QWidget *parent = nullptr);
+    explicit NationWindow(std::weak_ptr<Nation> nationWeakPtr, QWidget *parent = nullptr);
 };
