@@ -21,6 +21,6 @@ NationWindow::NationWindow(std::weak_ptr<Nation> nationWeakPtr, QWidget *parent)
     show();
 }
 
-NationWindow::refreshWindow() {
-    nationName->text('refreshed');
+void NationWindow::refreshWindow() {
+    nationName->setText("refreshed");
 }

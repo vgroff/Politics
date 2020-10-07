@@ -3,17 +3,19 @@
 #include <iostream>
 
 Engine::Engine(time_point startingDate) 
-: currentDate(startingDate) {
+    : currentDate(startingDate), clock(std::make_shared<Clock>(7, startingDate)) {
     
 }
 
 void Engine::playTurn() {
-    currentDate += hours(24*7);
+    clock->nextTurn();
     std::ostringstream oss;
     oss << "Today is: " << currentDate;
     Log::log(oss.str());
     playerNation->runIndustryTurn();
 }
+
+std::shared_ptr<Clock> Engine::getClock() { return clock; }
 
 Engine Engine::testSetup() {
     Engine e(time_point(date(1997, 9, 20), hours(0)));

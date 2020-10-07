@@ -52,7 +52,8 @@ double distributeJobs(std::map<WorkerEducation, std::map<WorkerType, double>>& a
     return minRatio;
 }
 
-Nation::Nation(std::string name, 
+Nation::Nation(std::weak_ptr<Clock> clock,
+               std::string name, 
                PopulationProperties populationProperties,
                ElectorProperties electorProps, 
                CapitalistProperties capitalistProps, 
@@ -61,15 +62,21 @@ Nation::Nation(std::string name,
                Laws laws,
                Industry privateIndustry)
     : name(name), 
+    clock(clock),
     populationProps(populationProperties), 
     electorProps(electorProps), 
     capitalistProps(capitalistProps),
     researchProps(researchProps),
     politicalProps(politicalProps),
     laws(laws),
-    privateIndustry(privateIndustry) {    
+    privateIndustry(privateIndustry)
+    {
     if (sumsToOne(electorProps.workerEducation) == false) {
         throw std::invalid_argument("Worker education does not sum to one");
+    }
+    auto clock = clock.lock();
+    if (clock) {
+        
     }
 }
 
@@ -305,7 +312,7 @@ bool Nation::atFullEmployement() {
     return false;
 }
 
-Nation Nation::testSetupSingleNation() {
+Nation Nation::testSetupSingleNation(std::weak_ptr<Clock>  clock) {
     PopulationProperties props {
         .population = 60,
         .yearlyGrowthRate = 0.009,
@@ -345,7 +352,8 @@ Nation Nation::testSetupSingleNation() {
         .budgetLaws = budgetLaws
     };
 
-    Nation nation("United Kingdom",
+    Nation nation(clock,
+                  "United Kingdom",
                   props,
                   electors,
                   capitalistProps,

@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "Clock.hpp"
 #include "economy/Industry.hpp"
 #include "electors/Elector.hpp"
 #include "politics/PoliticalCompassPointGenerator.hpp"
@@ -46,6 +47,7 @@ class Nation {
     friend class NationWindow;
 private:
     std::string name;
+    std::weak_ptr<Clock> clock;
     PopulationProperties populationProps;
     ElectorProperties electorProps;
     CapitalistProperties capitalistProps;
@@ -69,7 +71,8 @@ private:
     void capitalistsInvest();
     void politicsTurn();
 public:
-    Nation(std::string name, 
+    Nation(std::weak_ptr<Clock> clock,
+           std::string name, 
            PopulationProperties populationProperties, 
            ElectorProperties electorProperties, 
            CapitalistProperties capitalistProperties, 
@@ -80,6 +83,6 @@ public:
     void runIndustryTurn();
     std::string getName();
 
-    static Nation testSetupSingleNation();
+    static Nation testSetupSingleNation(std::weak_ptr<Clock> clock);
 };
 
