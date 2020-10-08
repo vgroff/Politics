@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 #include "Clock.hpp"
 #include "economy/Industry.hpp"
@@ -43,7 +44,7 @@ struct Laws {
 };
 // Have Bill class that (see notez)
 
-class Nation {
+class Nation : ClockSubscriber, std::enable_shared_from_this<Nation> {
     friend class NationWindow;
 private:
     std::string name;
@@ -70,6 +71,7 @@ private:
     std::map<WorkerEducation, std::map<WorkerType, double>> calculateJobDistribution();
     void capitalistsInvest();
     void politicsTurn();
+    void runIndustryTurn();
 public:
     Nation(std::weak_ptr<Clock> clock,
            std::string name, 
@@ -80,7 +82,7 @@ public:
            PoliticalProperties politicalProps,
            Laws laws,
            Industry privateIndustry);
-    void runIndustryTurn();
+    void init();
     std::string getName();
 
     static Nation testSetupSingleNation(std::weak_ptr<Clock> clock);

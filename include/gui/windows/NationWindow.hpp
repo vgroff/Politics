@@ -14,5 +14,5 @@ private:
     void refreshWindow() override;
 
 public:
-    explicit NationWindow(std::weak_ptr<Nation> nationWeakPtr, QWidget *parent = nullptr);
+    explicit NationWindow(std::weak_ptr<const Clock> clock, std::weak_ptr<Nation> nationWeakPtr, QWidget *parent = nullptr);
 };

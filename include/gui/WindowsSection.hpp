@@ -1,5 +1,6 @@
 #pragma once
 #include "../Engine.hpp"
+#include "./windows/Window.hpp"
 #include <QtWidgets>
 
 
@@ -8,7 +9,7 @@ class WindowsSection : public QWidget {
 private:
     Engine* enginePtr;
     QPointer<QPushButton> windowButton;
-    QPointer<QDialog> window;
+    QPointer<Window> window;
 
 public:
     explicit WindowsSection(Engine *enginePtr, QWidget *parent = nullptr);

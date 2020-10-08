@@ -1,7 +1,7 @@
 #include "../../../include/gui/windows/NationWindow.hpp"
 
-NationWindow::NationWindow(std::weak_ptr<Nation> nationWeakPtr, QWidget *parent)
-    : Window(parent),
+NationWindow::NationWindow(std::weak_ptr<const Clock> clock, std::weak_ptr<Nation> nationWeakPtr, QWidget *parent)
+    : Window(clock, parent),
     nationWeakPtr(nationWeakPtr) {
 
     auto nationPtr = nationWeakPtr.lock();

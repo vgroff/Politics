@@ -62,7 +62,7 @@ Nation::Nation(std::weak_ptr<Clock> clock,
                Laws laws,
                Industry privateIndustry)
     : name(name), 
-    clock(clock),
+    ClockSubscriber(clock),
     populationProps(populationProperties), 
     electorProps(electorProps), 
     capitalistProps(capitalistProps),
@@ -74,14 +74,16 @@ Nation::Nation(std::weak_ptr<Clock> clock,
     if (sumsToOne(electorProps.workerEducation) == false) {
         throw std::invalid_argument("Worker education does not sum to one");
     }
-    auto clock = clock.lock();
-    if (clock) {
-        
-    }
 }
 
 std::string Nation::getName() {
     return name;
+}
+
+void Nation::init() {
+    subscribeToClock([this](time_point currentDate, size_t num) {
+        this->runIndustryTurn();
+    });
 }
 
 void Nation::runIndustryTurn() {

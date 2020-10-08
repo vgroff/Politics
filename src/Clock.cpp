@@ -3,25 +3,44 @@
 Clock::Clock(size_t turnSizeDays, time_point startingDate) 
     : turnSizeDays(turnSizeDays), currentDate(startingDate) {}
 
-void Clock::subscribe(std::function<void()> callback) {
-    callbacks.push_back(callback);
+size_t Clock::subscribe(std::function<void(time_point, size_t)> callback) const {
+    id += 1;
+    callbacks[id] = callback;
+    return id;
+}
+
+void Clock::unsubscribe(size_t id) const {
+    callbacks.erase(id);
 }
 
 void Clock::nextTurn() {
     currentDate += hours(24*turnSizeDays);
-    for (auto callback : callbacks) {
-        callback();
+    for (auto [id, callback] : callbacks) {
+        callback(currentDate, turnSizeDays);
     }
 }
 
-time_point Clock::getCurrentDate() {
+time_point Clock::getCurrentDate() const {
     return currentDate;
 }
 
-ClockSubscriber::ClockSubscriber(std::weak_ptr<Clock> clock) : clock(clock) {
+ClockSubscriber::ClockSubscriber(std::weak_ptr<const Clock> clock) : weakClock(clock) {
 
 }
 
-ClockSubscriber::subscribeToClock() {
-    std::weak_ptr<>();
+void ClockSubscriber::subscribeToClock(std::function<void(time_point, size_t)> callback) {
+    auto clock = weakClock.lock();
+    if (clock) {
+        size_t id = clock->subscribe(callback);
+        callbackIds.push_back(id);
+    }
+}
+
+ClockSubscriber::~ClockSubscriber() {
+    auto clock = weakClock.lock();
+    if (clock) {
+        for (auto callbackId : callbackIds) {
+            clock->unsubscribe(callbackId);
+        }
+    }
 }

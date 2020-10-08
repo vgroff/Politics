@@ -7,22 +7,26 @@ friend class Engine;
 private: 
     time_point currentDate;
     size_t turnSizeDays;
+    mutable size_t id = 1;
 
-    std::vector<std::function<void()>> callbacks;
+    mutable std::map<size_t, std::function<void(time_point, size_t)>> callbacks;
 
     void nextTurn();
 public:
     Clock(size_t turnSizeDays, time_point startingDate);
-    void subscribe(std::function<void()> callback);
+    size_t subscribe(std::function<void(time_point, size_t)> callback) const;
+    void unsubscribe(size_t id) const;
 
-    time_point getCurrentDate();
-    size_t getTurnSizeDays();
+    time_point getCurrentDate() const;
+    size_t getTurnSizeDays() const;
 };
 
 class ClockSubscriber {
-private:
-    std::weak_ptr<Clock> clock;
-    void subscribeToClock(std::function<void()> callback);
+protected:
+    std::vector<size_t> callbackIds;
+    std::weak_ptr<const Clock> weakClock;
+    void subscribeToClock(std::function<void(time_point, size_t)> callback);
 public:
-    ClockSubscriber(std::weak_ptr<Clock> clock);
-}
+    ClockSubscriber(std::weak_ptr<const Clock> clock);
+    ~ClockSubscriber();
+};
