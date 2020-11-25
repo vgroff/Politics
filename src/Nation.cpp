@@ -91,6 +91,22 @@ void Nation::runIndustryTurn() {
     double productivityDiff = (researchProps.research - privateIndustry.getProductivity())/researchProps.research;
     researchProps.research = researchProps.research*(1 + 0.01*MONTHS_PER_TURN/12 + 0.015*std::pow(productivityDiff, 2)*MONTHS_PER_TURN/12);
     privateIndustry.setCurrentTechnology(researchProps.research);
+
+    std::function<std::shared_ptr<AdditiveOperation<double>>(std::shared_ptr<Variable<double>>)> getModif = () {
+
+    };
+    AdditiveModifier<double, double> modifier();
+    researchProps.addModifier("Additive modifier to research", );
+
+    // productivityVariable = Variable<double>(defaultProductivity)
+    // productivityModifier = MultiplicativeModifier<double>([weak_self](const Variable<double> baseValue, const Variable<double> currentValue) {
+    //     weak_self->nationVariables[Research].getCurrentValue();
+    //     weak_self->globalVariables[MonthsPerTurn].getCurrentValue();
+    //     weak_self->privateIndustry.getVariable(Productivity).getCurrentValue();
+    //     // do the calculations
+    //     return MultiplicativeModifier(value);
+    // });
+
     // Increase population size
     growPopulation();
     // Increase employement if possible

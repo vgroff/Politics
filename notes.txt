@@ -84,6 +84,4 @@ Have some kind of global clock that can be subscribed to. Can be subscribed to p
 if we have a global clock, should e.g. industry subscribe to it and trigger automatically, though what if it needs data from nation? should nation pass a pointer/reference to itself to industry?
 
 LINK between underlying changes and UI changes:
-    - Each object variable is a SubscribableVariable instance that has to be get and set and can be subcribed to and 
-    it will trigger an event when it is set, allowing UIs to know when variables that are displaying have changed and to
-    re-display as a result. Could be a templateccc
+    - Most member variables should be of a Variable type that has a base value, an actual value, a history of values and a vector of modifiers

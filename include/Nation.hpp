@@ -4,6 +4,9 @@
 #include <memory>
 
 #include "Clock.hpp"
+#include "common/Modifier.hpp"
+#include "common/Operation.hpp"
+#include "common/Variable.hpp"
 #include "economy/Industry.hpp"
 #include "electors/Elector.hpp"
 #include "politics/PoliticalCompassPointGenerator.hpp"
@@ -31,6 +34,7 @@ struct CapitalistProperties {
 
 struct ResearchProperties {
     double research;
+    Variable<double> researchVar(0.0);
 };
 
 struct PoliticalProperties {
