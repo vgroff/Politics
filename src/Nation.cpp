@@ -92,11 +92,12 @@ void Nation::runIndustryTurn() {
     researchProps.research = researchProps.research*(1 + 0.01*MONTHS_PER_TURN/12 + 0.015*std::pow(productivityDiff, 2)*MONTHS_PER_TURN/12);
     privateIndustry.setCurrentTechnology(researchProps.research);
 
-    std::function<std::shared_ptr<AdditiveOperation<double>>(std::shared_ptr<Variable<double>>)> getModif = () {
-
+    std::function<std::shared_ptr<AdditiveOperation<double>>(std::shared_ptr<Variable<double>>)> getModif = [](std::weak_ptr<Variable<double>> currentResearchWeak) {
+        std::weak_ptr<Variable<double>> currentResearch = currentResearchWeak.lock(); // Should this be done in a superclass method
+        return AdditiveOperation<double>(currentResearch.getLatestValue(), 0.1); // This bit should be done by the modifier, or it needs to take the current value too
     };
-    AdditiveModifier<double, double> modifier();
-    researchProps.addModifier("Additive modifier to research", );
+    AdditiveModifier<double, double> modifier("Modifier for research", getModif);
+    researchProps.researchVar.addModifier("Additive modifier to research", modifier);
 
     // productivityVariable = Variable<double>(defaultProductivity)
     // productivityModifier = MultiplicativeModifier<double>([weak_self](const Variable<double> baseValue, const Variable<double> currentValue) {

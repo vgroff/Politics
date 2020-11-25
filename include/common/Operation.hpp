@@ -39,8 +39,22 @@ private:
     std::shared_ptr<Operation<U>> inputOp1 = nullptr;
     std::shared_ptr<Operation<V>> inputOp2 = nullptr;
 public:
-    BinaryOperation(std::shared_ptr<Operation<T>> inputOp1, std::shared_ptr<Operation<T>> inputOp2)
+    BinaryOperation(std::shared_ptr<Operation<U>> inputOp1, std::shared_ptr<Operation<V>> inputOp2)
     : inputOp1(inputOp1), inputOp2(inputOp2) {};
+    BinaryOperation(std::shared_ptr<Variable<T>> inputVar1, std::shared_ptr<Operation<T>> inputOp2)
+    : inputOp2(inputOp2) {
+        inputOp1 = std::make_shared<EvaluateOperation<U>>(inputVar1);
+    };
+    BinaryOperation(std::shared_ptr<Operation<T>> inputVar1, std::shared_ptr<Variable<T>> inputOp2)
+    : inputOp1(inputOp1) {
+        inputOp2 = std::make_shared<EvaluateOperation<V>>(inputVar2);
+    };
+    BinaryOperation(std::shared_ptr<Variable<T>> inputVar1, std::shared_ptr<Variable<T>> inputOp2)
+    : {
+        inputOp1 = std::make_shared<EvaluateOperation<U>>(inputVar1);
+        inputOp2 = std::make_shared<EvaluateOperation<V>>(inputVar2);
+    };
+
 
     T evaluate() {
         evaluate(inputOp1->evaluate(), inputOp2->evaluate());
