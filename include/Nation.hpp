@@ -34,7 +34,7 @@ struct CapitalistProperties {
 
 struct ResearchProperties {
     double research;
-    Variable<double> researchVar(0.0);
+    std::shared_ptr<Variable<double>> researchVar = std::make_shared<Variable<double>>(std::string("research"), 0.0);
 };
 
 struct PoliticalProperties {

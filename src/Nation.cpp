@@ -6,6 +6,7 @@
 #include "../include/electors/Utility.hpp"
 
 #include<iostream>
+#include<memory>
 
 // Distribute available jobs amongst educations. Actual job dist is the output, along with the minimum ratio of jobs filled (due to lack of education)
 double distributeJobs(std::map<WorkerEducation, std::map<WorkerType, double>>& actualJobDist,
@@ -92,12 +93,15 @@ void Nation::runIndustryTurn() {
     researchProps.research = researchProps.research*(1 + 0.01*MONTHS_PER_TURN/12 + 0.015*std::pow(productivityDiff, 2)*MONTHS_PER_TURN/12);
     privateIndustry.setCurrentTechnology(researchProps.research);
 
-    std::function<std::shared_ptr<AdditiveOperation<double>>(std::shared_ptr<Variable<double>>)> getModif = [](std::weak_ptr<Variable<double>> currentResearchWeak) {
-        std::weak_ptr<Variable<double>> currentResearch = currentResearchWeak.lock(); // Should this be done in a superclass method
-        return AdditiveOperation<double>(currentResearch.getLatestValue(), 0.1); // This bit should be done by the modifier, or it needs to take the current value too
+    std::weak_ptr<Variable<double>> researchVar(researchProps.researchVar);
+    std::function<std::shared_ptr<AdditiveOperation<double>>(std::weak_ptr<Variable<double>>)> getModif = [](std::weak_ptr<Variable<double>> researchVarWeak) {
+        auto currentResearch = researchVarWeak.lock(); // TODO: Should this be done in a superclass method?
+        auto addition = std::make_shared<Variable<double>>(std::string("increase in research"), 0.1);
+        return std::make_shared<AdditiveOperation<double>>(currentResearch, addition); // This bit should be done by the modifier, or it needs to take the current value too
     };
-    AdditiveModifier<double, double> modifier("Modifier for research", getModif);
-    researchProps.researchVar.addModifier("Additive modifier to research", modifier);
+    const auto addMod = std::make_shared<AdditiveModifier<double>>(std::string("Modifier for research"), getModif);
+    auto modifier = std::static_pointer_cast<Modifier<double>>(addMod);
+    researchProps.researchVar->addModifier(modifier);
 
     // productivityVariable = Variable<double>(defaultProductivity)
     // productivityModifier = MultiplicativeModifier<double>([weak_self](const Variable<double> baseValue, const Variable<double> currentValue) {

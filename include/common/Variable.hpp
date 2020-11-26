@@ -1,5 +1,6 @@
 #pragma once
 #include "./Modifier.hpp"
+#include <exception>
 
 template <class T>
 class Variable {
@@ -10,10 +11,10 @@ private:
     std::vector<std::shared_ptr<Modifier<T>>> baseValueModifiers = {};
 public:
     Variable(std::string variableName, T defaultValue)
-    : variableName(variableName), baseValue(baseValue) {}
+    : variableName(variableName), baseValue(defaultValue) {}
 
     void addModifier(std::shared_ptr<Modifier<T>> modifier) {
-        modifiers.push_back(modifier);
+        baseValueModifiers.push_back(modifier);
     }
 
     virtual T getBaseValue() const {
@@ -36,7 +37,7 @@ public:
         return latestValue;
     }
 
-    static T applyModifiers(T baseValue, std::vector<Modifier<T>> modifiers) {
+    static T applyModifiers(T baseValue, std::vector<std::shared_ptr<Modifier<T>>> modifiers) {
         // Need to order these depending on the type of modifier
         // but it occurs to me that having them be Modifiers is not great,
         // they actually need to be shared pointers in order for us to distinguish
@@ -44,58 +45,61 @@ public:
         // modifiers->sort(key: priority)
         // for each modifier:
         //     currentValue = modifier.getOperation(currentValue).evaluate()
+        std::sort(modifiers.begin(), modifiers.end(), [](std::shared_ptr<Modifier<T>> modifier1, std::shared_ptr<Modifier<T>> modifier2) {
+            return modifier1->getPriority() < modifier2->getPriority();
+        });
+        T currentValue = baseValue;
         for (auto& modifier : modifiers) {
-            modifier.modify(currentValue);
-        }        
+            currentValue = modifier->getModification(currentValue)->evaluate();
+        }
+        return currentValue;
     }
 
-    static virtual std::string getDescription();
+    virtual std::string getDescription() {
+        return variableName;
+    };
+};
+
+class ConstVariableAltered: std::exception {
+	const char * what () const throw () {
+    	return "ConstVariableAltered";
+    }
 };
 
 template <class T>
 class ConstVariable : Variable<T> {
 public:
-    ComplexVariable(T defaultValue) 
-    : Variable(defaultValue) {}
+    ConstVariable(std::string variableName, T defaultValue) 
+    : Variable<T>(variableName, defaultValue) {}
 
-    virtual Variable setCurrentValue(T value) {
-        throw std::exception("Const variable can't be altered without modifiers");
+    virtual void setCurrentValue(T value) {
+        throw ConstVariableAltered();
     }
 };
 
-template <class T>
-class Evaluator {
-private:
+// Perhaps all variables should be functional ones? overhead tho
+// template <class T>
+// class FunctionalVariable: ConstVariable<T> {
+// private:
+//     std::function<T()> baseValueGetter; // templatize this?
+//     std::vector<Modifier<T>()> modifierGetters;
+// public:
+//     FunctionalVariable(std::string variableName, std::function<Variable<T>()>  baseValueGetter)
+//     : Variable<T>(baseValueGetter()) {}
 
-public:
-    // Give this class the variables you are going to use
-    // and provide it with a method that uses these as arguments
-    // and returns a T when evaluate() is called i.e. std::function<T(variables)> baseValueGetter
-};
+//     void addModifier(Modifier modifier) {
+//         modifiers.push_back(modifier);
+//     }
 
-// Perhaps all variables should be functional ones?
-template <class T>
-class FunctionalVariable: ConstVariable<T> {
-private:
-    std::function<T()> baseValueGetter; // templatize this?
-    std::vector<Modifier<T>()> modifierGetters;
-public:
-    FunctionalVariable(std::string variableName, std::function<Variable<T>()>  baseValueGetter)
-    : Variable(baseValueGetter()) {}
-
-    void addModifier(Modifier modifier) {
-        modifiers.push_back(modifier);
-    }
-
-    virtual Variable getValue() {
-        // TODO: this probably not valid anymore
-        T currentValue = value;
-        for (auto& modifier : modifierGetters) {
-            currentValue = modifier.modify(currentValue);
-        }
-        return currentValue;
-    }
-};
+//     virtual Variable getValue() {
+//         // TODO: this probably not valid anymore
+//         T currentValue = value;
+//         for (auto& modifier : modifierGetters) {
+//             currentValue = modifier.modify(currentValue);
+//         }
+//         return currentValue;
+//     }
+// };
 
 // Still to do:
 // - Get it to compile as is
@@ -106,7 +110,8 @@ public:
 // - Variables that track themselves over time
 // - Modifiers that dont have a getModif function - operations are constant
 // - Add AND and OR operations
-// - Add Minus/Invert operations
+// - Add Negative/Invert unary operations
+// - Add divide and exponentiation operations
 // - Add + and * operations for the ideology vectors - maybe make this into it's own type?
 // - Computed variables - do we even need these and how do they fit in with the rest?
 // - Intermediate "Game" Object that holds the clock and GUI and stuff
