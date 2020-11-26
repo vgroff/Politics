@@ -1,10 +1,5 @@
 #pragma once
-
-template <class T>
-class Variable;
-
-template <class T>
-class Operation;
+#include "./Operation.hpp"
 
 enum ModifierPriority {
     First,
@@ -29,10 +24,7 @@ public:
 };
 
 template <class T>
-class AdditiveOperation;
-
-template <class T>
-class AdditiveModifier: Modifier<T> {
+class AdditiveModifier: public Modifier<T> {
 private:
     std::function<std::shared_ptr<AdditiveOperation<T>>(std::shared_ptr<Variable<T>>)> getModif;
 public:
@@ -48,9 +40,6 @@ public:
         return getModif(variable);
     };
 };
-
-template <class T>
-class MultiplicativeOperation;
 
 template <class T>
 class MultiplicativeModifier: Modifier<T> {

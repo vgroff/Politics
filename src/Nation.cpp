@@ -99,8 +99,7 @@ void Nation::runIndustryTurn() {
         auto addition = std::make_shared<Variable<double>>(std::string("increase in research"), 0.1);
         return std::make_shared<AdditiveOperation<double>>(currentResearch, addition); // This bit should be done by the modifier, or it needs to take the current value too
     };
-    const auto addMod = std::make_shared<AdditiveModifier<double>>(std::string("Modifier for research"), getModif);
-    auto modifier = std::static_pointer_cast<Modifier<double>>(addMod);
+    auto modifier = std::make_shared<AdditiveModifier<double>>(std::string("Modifier for research"), getModif);
     researchProps.researchVar->addModifier(modifier);
 
     // productivityVariable = Variable<double>(defaultProductivity)

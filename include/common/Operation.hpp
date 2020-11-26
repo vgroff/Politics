@@ -1,6 +1,11 @@
 #pragma once
-#include "Modifier.hpp"
 #include <sstream>
+
+template <class T>
+class Variable;
+
+template <class T>
+class Operation;
 
 template <class T>
 class Operation {
@@ -11,27 +16,27 @@ public:
 };
 
 template <class T>
-class EvaluateOperation: Operation<T> {
+class EvaluateOperation: public Operation<T> {
 private:
     std::shared_ptr<Variable<T>> inputVar = nullptr;
 public:
     EvaluateOperation(std::shared_ptr<Variable<T>> inputVar)
     : inputVar(inputVar) {};
     virtual T evaluate() {
-        return inputVar->getLatestValue();
+        return inputVar->getLatest();
     };
     virtual std::string getDescription() {
         return "Returns the latest value of the inputted variable";
     };
     virtual std::string stringify() {
         std::ostringstream oss;
-        oss << inputVar->getLatestValue();
+        oss << inputVar->getLatest();
         return oss.str();
     };
 };
 
 template <class T, class U>
-class UnaryOperation: Operation<T> {
+class UnaryOperation: public Operation<T> {
 private:
     std::shared_ptr<Operation<U>> inputOp = nullptr;
 public:
@@ -44,7 +49,7 @@ public:
 };
 
 template <class T, class U, class V>
-class BinaryOperation: Operation<T>  {
+class BinaryOperation: public Operation<T>  {
 private:
     std::shared_ptr<Operation<U>> inputOp1 = nullptr;
     std::shared_ptr<Operation<V>> inputOp2 = nullptr;
@@ -67,19 +72,19 @@ public:
 
     virtual std::string stringify() {
         std::ostringstream oss;
-        oss << inputOp1->evaluate() << stringifyOperator() << inputOp2-evaluate();
+        oss << inputOp1->evaluate() << stringifyOperator() << inputOp2->evaluate();
         return oss.str();
     };
     virtual std::string stringifyOperator() = 0;
 
     T evaluate() {
-        evaluate(inputOp1->evaluate(), inputOp2->evaluate());
+        return evaluate(inputOp1->evaluate(), inputOp2->evaluate());
     };
     virtual T evaluate(U x, V y) = 0;
 };
 
 template <class T>
-class AdditiveOperation: BinaryOperation<T, T, T> {
+class AdditiveOperation: public BinaryOperation<T, T, T> {
 public:
     using BinaryOperation<T,T,T>::BinaryOperation;
     virtual T evaluate(T x, T y) {
@@ -94,7 +99,7 @@ public:
 };
 
 template <class T>
-class MultiplicativeOperation: BinaryOperation<T, T, T> {
+class MultiplicativeOperation: public BinaryOperation<T, T, T> {
 public:
     using BinaryOperation<T,T,T>::BinaryOperation;
     virtual T evaluate(T x, T y) {
