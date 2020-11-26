@@ -97,6 +97,20 @@ public:
     }
 };
 
+// Still to do:
+// - Get it to compile as is
+// - Add weak pointer (optionally?) to object so that we know where variable came from, could be pointer to mapping that points to object instead 
+// - Add soft setting variables
+// - Add averaging operation - variadic function - can only average vars of the same type so no variadic class
+// - Hysteresis variables
+// - Variables that track themselves over time
+// - Modifiers that dont have a getModif function - operations are constant
+// - Add AND and OR operations
+// - Add Minus/Invert operations
+// - Add + and * operations for the ideology vectors - maybe make this into it's own type?
+// - Computed variables - do we even need these and how do they fit in with the rest?
+// - Intermediate "Game" Object that holds the clock and GUI and stuff
+
 // template <class T, class U>
 // class ComplexVariable : Variable<T> {
 // private:
