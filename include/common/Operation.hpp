@@ -2,10 +2,7 @@
 #include <sstream>
 
 template <class T>
-class Variable;
-
-template <class T>
-class Operation;
+class Value;
 
 template <class T>
 class Operation {
@@ -16,21 +13,21 @@ public:
 };
 
 template <class T>
-class EvaluateOperation: public Operation<T> {
+class Evaluation: public Operation<T> {
 private:
-    std::shared_ptr<Variable<T>> inputVar = nullptr;
+    Value<T> inputVar;
 public:
-    EvaluateOperation(std::shared_ptr<Variable<T>> inputVar)
+    Evaluation(Value<T> inputVar)
     : inputVar(inputVar) {};
     virtual T evaluate() {
-        return inputVar->getLatest();
+        return inputVar.getValue();
     };
     virtual std::string getDescription() {
         return "Returns the latest value of the inputted variable";
     };
     virtual std::string stringify() {
         std::ostringstream oss;
-        oss << inputVar->getLatest();
+        oss << inputVar.getValue();
         return oss.str();
     };
 };
@@ -56,18 +53,18 @@ private:
 public:
     BinaryOperation(std::shared_ptr<Operation<U>> inputOp1, std::shared_ptr<Operation<V>> inputOp2)
     : inputOp1(inputOp1), inputOp2(inputOp2) {};
-    BinaryOperation(std::shared_ptr<Variable<T>> inputVar1, std::shared_ptr<Operation<T>> inputOp2)
+    BinaryOperation(Value<T> inputVar1, std::shared_ptr<Operation<T>> inputOp2)
     : inputOp2(inputOp2) {
-        inputOp1 = std::make_shared<EvaluateOperation<U>>(inputVar1);
+        inputOp1 = std::make_shared<Evaluation<U>>(inputVar1);
     };
-    BinaryOperation(std::shared_ptr<Operation<T>> inputVar1, std::shared_ptr<Variable<T>> inputVar2)
+    BinaryOperation(std::shared_ptr<Operation<T>> inputVar1, Value<T> inputVar2)
     : inputOp1(inputOp1) {
-        inputOp2 = std::make_shared<EvaluateOperation<V>>(inputVar2);
+        inputOp2 = std::make_shared<Evaluation<V>>(inputVar2);
     };
-    BinaryOperation(std::shared_ptr<Variable<T>> inputVar1, std::shared_ptr<Variable<T>> inputVar2)
+    BinaryOperation(Value<T> inputVar1, Value<T> inputVar2)
     {
-        inputOp1 = std::make_shared<EvaluateOperation<U>>(inputVar1);
-        inputOp2 = std::make_shared<EvaluateOperation<V>>(inputVar2);
+        inputOp1 = std::make_shared<Evaluation<U>>(inputVar1);
+        inputOp2 = std::make_shared<Evaluation<V>>(inputVar2);
     };
 
     virtual std::string stringify() {
@@ -84,7 +81,7 @@ public:
 };
 
 template <class T>
-class AdditiveOperation: public BinaryOperation<T, T, T> {
+class Addition: public BinaryOperation<T, T, T> {
 public:
     using BinaryOperation<T,T,T>::BinaryOperation;
     virtual T evaluate(T x, T y) {
@@ -99,7 +96,7 @@ public:
 };
 
 template <class T>
-class MultiplicativeOperation: public BinaryOperation<T, T, T> {
+class Multiplication: public BinaryOperation<T, T, T> {
 public:
     using BinaryOperation<T,T,T>::BinaryOperation;
     virtual T evaluate(T x, T y) {

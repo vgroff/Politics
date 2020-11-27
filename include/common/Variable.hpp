@@ -3,54 +3,68 @@
 #include <exception>
 
 template <class T>
+class Value {
+private:
+    std::string valueName;
+    T value;
+public:
+    Value(std::string valueName, T defaultValue)
+    : valueName(valueName), value(defaultValue) {};
+    std::string getName() const {
+        return valueName;
+    };
+    T getValue() const {
+        return value;
+    };
+    void setValue(T newValue) {
+        value = newValue;
+    }
+};
+
+template <class T>
 class Variable {
 private:
     std::string variableName;
-    T baseValue;
-    T latestValue;
+    Value<T> baseValue;
+    Value<T> latestValue;
     std::vector<std::shared_ptr<Modifier<T>>> baseValueModifiers = {};
 public:
     Variable(std::string variableName, T defaultValue)
-    : variableName(variableName), baseValue(defaultValue) {}
+    : variableName(variableName), 
+    baseValue("Base value of " + variableName, defaultValue),
+    latestValue("Latest value of " + variableName, defaultValue) {}
 
     void addModifier(std::shared_ptr<Modifier<T>> modifier) {
         baseValueModifiers.push_back(modifier);
     }
 
-    virtual T getBaseValue() const {
+    virtual Value<T> getBaseValue() const {
         return baseValue;
     }
 
     virtual void setBaseValue(T value) {
-        baseValue = value;
+        baseValue.setValue(value);
     }
 
-    virtual T calculateValue(bool setLatest) {
-        T value = applyModifiers(baseValue, baseValueModifiers);
+    virtual Value<T> calculateValue(bool setLatest) {
+        Value<T> value = applyModifiers(baseValue, baseValueModifiers);
         if (setLatest) {
             latestValue = value;
         }
+        return value;
+    }
+
+    virtual Value<T> getLatest() {
         return latestValue;
     }
 
-    virtual T getLatest() {
-        return latestValue;
-    }
-
-    static T applyModifiers(T baseValue, std::vector<std::shared_ptr<Modifier<T>>> modifiers) {
-        // Need to order these depending on the type of modifier
-        // but it occurs to me that having them be Modifiers is not great,
-        // they actually need to be shared pointers in order for us to distinguish
-        // the type
-        // modifiers->sort(key: priority)
-        // for each modifier:
-        //     currentValue = modifier.getOperation(currentValue).evaluate()
+    static Value<T> applyModifiers(const Value<T>& baseValue, std::vector<std::shared_ptr<Modifier<T>>> modifiers) {
         std::sort(modifiers.begin(), modifiers.end(), [](std::shared_ptr<Modifier<T>> modifier1, std::shared_ptr<Modifier<T>> modifier2) {
             return modifier1->getPriority() < modifier2->getPriority();
         });
-        T currentValue = baseValue;
+        Value<T> currentValue = baseValue;
         for (auto& modifier : modifiers) {
-            currentValue = modifier->getModification(currentValue)->evaluate();
+            currentValue.setValue(modifier->getModification(currentValue)->evaluate());
         }
         return currentValue;
     }
@@ -103,7 +117,9 @@ public:
 
 // Still to do:
 // - Get it to compile as is
-// - Add weak pointer (optionally?) to object so that we know where variable came from, could be pointer to mapping that points to object instead 
+// - Rename to Addition/Multiplication
+// - Rename to Evaluate
+// - DONT DO THIS WITH TEMPLATES, DO IT WITH INHERITANCE, Add weak pointer (optionally?) to object so that we know where variable came from, could be pointer to mapping that points to object instead 
 // - Add soft setting variables
 // - Add averaging operation - variadic function - can only average vars of the same type so no variadic class
 // - Hysteresis variables
@@ -113,6 +129,7 @@ public:
 // - Add Negative/Invert unary operations
 // - Add divide and exponentiation operations
 // - Add + and * operations for the ideology vectors - maybe make this into it's own type?
+// - Variables need to save modifications so that they can show what they did in the latest update
 // - Computed variables - do we even need these and how do they fit in with the rest?
 // - Intermediate "Game" Object that holds the clock and GUI and stuff
 

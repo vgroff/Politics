@@ -20,23 +20,23 @@ public:
     ModifierPriority getPriority() {
         return priority;
     }
-    std::shared_ptr<Operation<T>> virtual getModification(T variable) = 0;
+    std::shared_ptr<Operation<T>> virtual getModification(Value<T> variable) = 0;
 };
 
 template <class T>
 class AdditiveModifier: public Modifier<T> {
 private:
-    std::function<std::shared_ptr<AdditiveOperation<T>>(std::shared_ptr<Variable<T>>)> getModif;
+    std::function<std::shared_ptr<Addition<T>>(Value<T>)> getModif;
 public:
     AdditiveModifier(std::string modifierDescription, 
             ModifierPriority priority,
-            std::function<std::shared_ptr<AdditiveOperation<T>>(std::shared_ptr<Variable<T>>)> getModif)
+            std::function<std::shared_ptr<Addition<T>>(Value<T>)> getModif)
     : Modifier<T>(modifierDescription, priority), getModif(getModif) {};
     AdditiveModifier(std::string modifierDescription, 
-            std::function<std::shared_ptr<AdditiveOperation<T>>(std::shared_ptr<Variable<T>>)> getModif)
+            std::function<std::shared_ptr<Addition<T>>(Value<T>)> getModif)
     : Modifier<T>(modifierDescription, Linear), getModif(getModif) {};
 
-    std::shared_ptr<Operation<T>> getModification(T variable) {
+    std::shared_ptr<Operation<T>> getModification(Value<T> variable) {
         return getModif(variable);
     };
 };
@@ -44,17 +44,17 @@ public:
 template <class T>
 class MultiplicativeModifier: Modifier<T> {
 private:
-    std::function<std::shared_ptr<MultiplicativeOperation<T>>(std::shared_ptr<Variable<T>>)> getModif;
+    std::function<std::shared_ptr<Multiplication<T>>(Value<T>)> getModif;
 public:
     MultiplicativeModifier(std::string modifierDescription, 
             ModifierPriority priority,
-            std::function<std::shared_ptr<MultiplicativeOperation<T>>(std::shared_ptr<Variable<T>>)> getModif)
+            std::function<std::shared_ptr<Multiplication<T>>(Value<T>)> getModif)
     : Modifier<T>(modifierDescription, priority), getModif(getModif) {};
     MultiplicativeModifier(std::string modifierDescription, 
-            std::function<std::shared_ptr<MultiplicativeOperation<T>>(std::shared_ptr<Variable<T>>)> getModif)
+            std::function<std::shared_ptr<Multiplication<T>>(Value<T>)> getModif)
     : Modifier<T>(modifierDescription, Multiplicative, getModif) {};
 
-    std::shared_ptr<Operation<T>> getModification(T variable) {
+    std::shared_ptr<Operation<T>> getModification(Value<T> variable) {
         return getModif(variable);
     };
 };
@@ -62,14 +62,14 @@ public:
 template <class T>
 class CustomModifier: Modifier<T> {
 private:
-    std::function<std::shared_ptr<Operation<T>>(std::shared_ptr<Variable<T>>)> getModif;
+    std::function<std::shared_ptr<Operation<T>>(std::shared_ptr<Value<T>>)> getModif;
 public:
     CustomModifier(std::string modifierDescription, 
             ModifierPriority priority, 
-            std::function<std::shared_ptr<Operation<T>>(Variable<T>)> getModif)
+            std::function<std::shared_ptr<Operation<T>>(Value<T>)> getModif)
     : Modifier<T>(modifierDescription, priority), getModif(getModif) {};
 
-    std::shared_ptr<Operation<T>> getModification(T variable) {
+    std::shared_ptr<Operation<T>> getModification(Value<T> variable) {
         return getModif(variable);
     };
 };

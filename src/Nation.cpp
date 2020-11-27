@@ -94,22 +94,15 @@ void Nation::runIndustryTurn() {
     privateIndustry.setCurrentTechnology(researchProps.research);
 
     std::weak_ptr<Variable<double>> researchVar(researchProps.researchVar);
-    std::function<std::shared_ptr<AdditiveOperation<double>>(std::weak_ptr<Variable<double>>)> getModif = [](std::weak_ptr<Variable<double>> researchVarWeak) {
-        auto currentResearch = researchVarWeak.lock(); // TODO: Should this be done in a superclass method?
-        auto addition = std::make_shared<Variable<double>>(std::string("increase in research"), 0.1);
-        return std::make_shared<AdditiveOperation<double>>(currentResearch, addition); // This bit should be done by the modifier, or it needs to take the current value too
+    std::function<std::shared_ptr<Addition<double>>(Value<double>)> getModif = [](Value<double> researchVar) {
+        auto addition = Value<double>(std::string("increase in research"), 0.1);
+        return std::make_shared<Addition<double>>(researchVar, addition); // This bit should be done by the modifier, or it needs to take the current value too
     };
     auto modifier = std::make_shared<AdditiveModifier<double>>(std::string("Modifier for research"), getModif);
     researchProps.researchVar->addModifier(modifier);
-
-    // productivityVariable = Variable<double>(defaultProductivity)
-    // productivityModifier = MultiplicativeModifier<double>([weak_self](const Variable<double> baseValue, const Variable<double> currentValue) {
-    //     weak_self->nationVariables[Research].getCurrentValue();
-    //     weak_self->globalVariables[MonthsPerTurn].getCurrentValue();
-    //     weak_self->privateIndustry.getVariable(Productivity).getCurrentValue();
-    //     // do the calculations
-    //     return MultiplicativeModifier(value);
-    // });
+    researchProps.researchVar->calculateValue(true);
+    std::cout << researchProps.researchVar->getLatest().getValue();
+    throw std::exception();
 
     // Increase population size
     growPopulation();
