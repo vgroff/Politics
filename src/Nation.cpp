@@ -93,16 +93,15 @@ void Nation::runIndustryTurn() {
     researchProps.research = researchProps.research*(1 + 0.01*MONTHS_PER_TURN/12 + 0.015*std::pow(productivityDiff, 2)*MONTHS_PER_TURN/12);
     privateIndustry.setCurrentTechnology(researchProps.research);
 
-    std::weak_ptr<Variable<double>> researchVar(researchProps.researchVar);
     std::function<std::shared_ptr<Addition<double>>(Value<double>)> getModif = [](Value<double> researchVar) {
         auto addition = Value<double>(std::string("increase in research"), 0.1);
         return std::make_shared<Addition<double>>(researchVar, addition); // This bit should be done by the modifier, or it needs to take the current value too
     };
     auto modifier = std::make_shared<AdditiveModifier<double>>(std::string("Modifier for research"), getModif);
-    researchProps.researchVar->addModifier(modifier);
-    researchProps.researchVar->calculateValue(true);
-    std::cout << researchProps.researchVar->getLatest().getValue();
-    throw std::exception();
+    researchProps.researchVar.addModifier(modifier);
+    researchProps.researchVar.calculate(true);
+    std::cerr << researchProps.researchVar.getLatest().stringifyHistory() << std::endl;
+    std::cerr << researchProps.researchVar.getLatestCalculation().stringify()  << std::endl;
 
     // Increase population size
     growPopulation();
@@ -349,9 +348,7 @@ Nation Nation::testSetupSingleNation(std::weak_ptr<Clock>  clock) {
         .numCapitalists = 0.3,
         .minUtility = 0.85
     };
-    ResearchProperties researchProps {
-        .research = 1.06
-    };
+    ResearchProperties researchProps(1.06, clock);
     PoliticalCompassPoint labourIdeology({{Capitalist, -0.28}, {Conservative, -0.32}, {Nationalist, -0.4}});
     PoliticalCompassPoint libDemIdeology({{Capitalist, 0.15}, {Conservative, -0.15}, {Nationalist, -0.6}});
     PoliticalCompassPoint toryIdeology({{Capitalist, 0.45}, {Conservative, 0.35}, {Nationalist, 0.45}});

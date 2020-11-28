@@ -1,0 +1,9 @@
+target_sources(politics
+    PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/BinaryOperation.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Modifier.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Operation.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/UnaryOperation.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Value.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Variable.hpp"
+)

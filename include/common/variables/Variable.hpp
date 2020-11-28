@@ -1,137 +1,133 @@
 #pragma once
 #include "./Modifier.hpp"
+#include "./Value.hpp"
 #include <exception>
-
-template <class T>
-class Value {
-private:
-    std::string valueName;
-    T value;
-public:
-    Value(std::string valueName, T defaultValue)
-    : valueName(valueName), value(defaultValue) {};
-    std::string getName() const {
-        return valueName;
-    };
-    T getValue() const {
-        return value;
-    };
-    void setValue(T newValue) {
-        value = newValue;
-    }
-};
+#include <memory>
 
 template <class T>
 class Variable {
-private:
-    std::string variableName;
+protected:
+    std::string name;
     Value<T> baseValue;
-    Value<T> latestValue;
+    TrackedValue<T> latestValue;
     std::vector<std::shared_ptr<Modifier<T>>> baseValueModifiers = {};
+    Calculation<T> latestCalculation;
 public:
-    Variable(std::string variableName, T defaultValue)
-    : variableName(variableName), 
-    baseValue("Base value of " + variableName, defaultValue),
-    latestValue("Latest value of " + variableName, defaultValue) {}
+    Variable(std::string name, 
+            T defaultValue, 
+            std::weak_ptr<Clock> clock,
+            size_t trackingRateDays = 0)
+    : name(name), 
+    baseValue("Base value of " + name, defaultValue, this),
+    latestValue("Latest value of " + name, defaultValue, this, clock, trackingRateDays),
+    latestCalculation("Latest calculation of " + name) {};
+
+    Variable(std::string name, 
+            T defaultValue, 
+            std::weak_ptr<Clock> clock,
+            std::pair<T,T> bounds_, 
+            size_t trackingRateDays = 0)
+    : name(name), 
+    baseValue("Base value of " + name, defaultValue, bounds_, this),
+    latestValue("Latest value of " + name, defaultValue, bounds_, this, clock, trackingRateDays),
+    latestCalculation("Latest calculation of " + name) {};
+
+    ~Variable() {
+        baseValue.setParent(nullptr);
+        latestValue.setParent(nullptr);
+    }
 
     void addModifier(std::shared_ptr<Modifier<T>> modifier) {
         baseValueModifiers.push_back(modifier);
     }
 
-    virtual Value<T> getBaseValue() const {
-        return baseValue;
-    }
-
-    virtual void setBaseValue(T value) {
-        baseValue.setValue(value);
-    }
-
-    virtual Value<T> calculateValue(bool setLatest) {
-        Value<T> value = applyModifiers(baseValue, baseValueModifiers);
-        if (setLatest) {
-            latestValue = value;
-        }
-        return value;
-    }
-
-    virtual Value<T> getLatest() {
+    virtual TrackedValue<T> getLatest() const {
         return latestValue;
     }
 
-    static Value<T> applyModifiers(const Value<T>& baseValue, std::vector<std::shared_ptr<Modifier<T>>> modifiers) {
-        std::sort(modifiers.begin(), modifiers.end(), [](std::shared_ptr<Modifier<T>> modifier1, std::shared_ptr<Modifier<T>> modifier2) {
-            return modifier1->getPriority() < modifier2->getPriority();
-        });
-        Value<T> currentValue = baseValue;
-        for (auto& modifier : modifiers) {
-            currentValue.setValue(modifier->getModification(currentValue)->evaluate());
+    Calculation<T> calculate(bool setLatest) {
+        Calculation<T> calculation("Calculation for " + name, baseValue, baseValueModifiers);
+        if (setLatest) {
+            T result = calculation.getResult();
+            latestValue.softSetValue(result);
+            latestCalculation = calculation;
         }
-        return currentValue;
+        return calculation;
     }
 
-    virtual std::string getDescription() {
-        return variableName;
+    Calculation<T> getLatestCalculation() const {
+        return latestCalculation;
+    }
+
+    virtual std::string getDescription() const {
+        return name;
     };
 };
 
-class ConstVariableAltered: std::exception {
-	const char * what () const throw () {
-    	return "ConstVariableAltered";
-    }
-};
-
 template <class T>
-class ConstVariable : Variable<T> {
-public:
-    ConstVariable(std::string variableName, T defaultValue) 
-    : Variable<T>(variableName, defaultValue) {}
+class HysteresisVariable: public Variable<T> {
+public: 
+    Variable<T> targetVariable;
+    Variable<double> growthRateVar;
+    std::vector<std::shared_ptr<Modifier<T>>> currentValueModifiers = {};
+    std::vector<std::shared_ptr<Modifier<T>>> growthRateModifiers = {};
 
-    virtual void setCurrentValue(T value) {
-        throw ConstVariableAltered();
+    HysteresisVariable(std::string name, 
+            T defaultValue, 
+            std::weak_ptr<Clock> clock,
+            size_t trackingRateDays = 0)
+    : Variable<T>(name, defaultValue, clock, trackingRateDays),
+    targetVariable("Target variables of " + name, defaultValue, std::weak_ptr<Clock>(), trackingRateDays),
+    growthRateVar("Growth rate of " + name, 0, std::weak_ptr<Clock>(), {0, 1}, trackingRateDays)
+    {};
+
+    HysteresisVariable(std::string name, 
+            T defaultValue, 
+            std::weak_ptr<Clock> clock,
+            std::pair<T,T> bounds_, 
+            size_t trackingRateDays = 0)
+    : Variable<T>(name, defaultValue, clock, bounds_, trackingRateDays),
+    targetVariable("Target variables of " + name, defaultValue, std::weak_ptr<Clock>(), bounds_, trackingRateDays),
+    growthRateVar("Growth rate of " + name, 0, std::weak_ptr<Clock>(), {0, 1}, trackingRateDays)
+    {};
+
+    Calculation<T> calculate(bool setLatest) {
+        auto currentVar = Variable<T>::calculate(setLatest);
+        if (setLatest) {
+            currentValueModifiers = {};
+        }
+        targetVariable.calculate(setLatest);
+        auto growthRateCalc = growthRateVar.calculate(setLatest);
+        Value<double> currentValue("Calculated current value of " + this->name, currentVar->getResult(), this);
+        auto newValue = std::make_shared<Multiplication<double, T>>(growthRateVar, currentValue);
+        Calculation<T> calculation("Value of " + this->name + " including growth", {newValue});
+        if (setLatest) {
+            currentValue.softSetValue(calculation.getResult());
+        }
+        return calculation;
     }
 };
-
-// Perhaps all variables should be functional ones? overhead tho
-// template <class T>
-// class FunctionalVariable: ConstVariable<T> {
-// private:
-//     std::function<T()> baseValueGetter; // templatize this?
-//     std::vector<Modifier<T>()> modifierGetters;
-// public:
-//     FunctionalVariable(std::string variableName, std::function<Variable<T>()>  baseValueGetter)
-//     : Variable<T>(baseValueGetter()) {}
-
-//     void addModifier(Modifier modifier) {
-//         modifiers.push_back(modifier);
-//     }
-
-//     virtual Variable getValue() {
-//         // TODO: this probably not valid anymore
-//         T currentValue = value;
-//         for (auto& modifier : modifierGetters) {
-//             currentValue = modifier.modify(currentValue);
-//         }
-//         return currentValue;
-//     }
-// };
 
 // Still to do:
-// - Get it to compile as is
-// - Rename to Addition/Multiplication
-// - Rename to Evaluate
+// - Need to be able to set only a lower bound for variables like population
+// - Convert existing code to using Variables!!! Have a big init method that sets everything up then
+//      - We'll want to calculate some values in order rather than having them rely on potentially old values
+//         which begs the question of when exactly values should update - on command, or on the clock?
+//          On the clock might be "nicer" since it is automatic, we just need to subscribe those objects to the clock at the correct time
+//          which just means creating them at the correct time on init
+// - Hyseresis modifiers! Easy or not? Could just be done through intermediary variables but might be ugly?
+// - Functional variables ?
+// - Need a ModificationPriority since some modifiers may return varied outputs
+// - Hysteresis variables that grow and fall differently
 // - DONT DO THIS WITH TEMPLATES, DO IT WITH INHERITANCE, Add weak pointer (optionally?) to object so that we know where variable came from, could be pointer to mapping that points to object instead 
-// - Add soft setting variables
 // - Add averaging operation - variadic function - can only average vars of the same type so no variadic class
-// - Hysteresis variables
-// - Variables that track themselves over time
-// - Modifiers that dont have a getModif function - operations are constant
+// - Modifiers that dont have a getModif function - operations are constant ?
 // - Add AND and OR operations
 // - Add Negative/Invert unary operations
 // - Add divide and exponentiation operations
 // - Add + and * operations for the ideology vectors - maybe make this into it's own type?
-// - Variables need to save modifications so that they can show what they did in the latest update
 // - Computed variables - do we even need these and how do they fit in with the rest?
-// - Intermediate "Game" Object that holds the clock and GUI and stuff
+// -
 
 // template <class T, class U>
 // class ComplexVariable : Variable<T> {

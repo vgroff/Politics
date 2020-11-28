@@ -4,9 +4,9 @@
 #include <memory>
 
 #include "Clock.hpp"
-#include "common/Modifier.hpp"
-#include "common/Operation.hpp"
-#include "common/Variable.hpp"
+#include "common/variables/Modifier.hpp"
+#include "common/variables/Operation.hpp"
+#include "common/variables/Variable.hpp"
 #include "economy/Industry.hpp"
 #include "electors/Elector.hpp"
 #include "politics/PoliticalCompassPointGenerator.hpp"
@@ -32,9 +32,13 @@ struct CapitalistProperties {
     const double minUtility;
 };
 
-struct ResearchProperties {
+class ResearchProperties {
+public:
     double research;
-    std::shared_ptr<Variable<double>> researchVar = std::make_shared<Variable<double>>(std::string("research"), 0.0);
+    Variable<double> researchVar;
+
+    ResearchProperties(double startingValue, std::weak_ptr<Clock> clock, size_t trackingRateDays = 14)
+    : research(startingValue), researchVar(std::string("research"), startingValue, clock, trackingRateDays) { };
 };
 
 struct PoliticalProperties {
@@ -89,6 +93,7 @@ public:
     void init();
     std::string getName();
 
+    
     static Nation testSetupSingleNation(std::weak_ptr<Clock> clock);
 };
 

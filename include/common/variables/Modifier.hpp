@@ -1,11 +1,13 @@
 #pragma once
 #include "./Operation.hpp"
+#include "./UnaryOperation.hpp"
+#include "./BinaryOperation.hpp"
+
 
 enum ModifierPriority {
-    First,
+    Setter,
     Linear,
-    Multiplicative,
-    Last
+    Multiplicative
 };
 
 template <class T>
@@ -41,17 +43,17 @@ public:
     };
 };
 
-template <class T>
+template <class T, class U>
 class MultiplicativeModifier: Modifier<T> {
 private:
-    std::function<std::shared_ptr<Multiplication<T>>(Value<T>)> getModif;
+    std::function<std::shared_ptr<Multiplication<T, U>>(Value<T>)> getModif;
 public:
     MultiplicativeModifier(std::string modifierDescription, 
             ModifierPriority priority,
-            std::function<std::shared_ptr<Multiplication<T>>(Value<T>)> getModif)
+            std::function<std::shared_ptr<Multiplication<T, U>>(Value<T>)> getModif)
     : Modifier<T>(modifierDescription, priority), getModif(getModif) {};
     MultiplicativeModifier(std::string modifierDescription, 
-            std::function<std::shared_ptr<Multiplication<T>>(Value<T>)> getModif)
+            std::function<std::shared_ptr<Multiplication<T, U>>(Value<T>)> getModif)
     : Modifier<T>(modifierDescription, Multiplicative, getModif) {};
 
     std::shared_ptr<Operation<T>> getModification(Value<T> variable) {

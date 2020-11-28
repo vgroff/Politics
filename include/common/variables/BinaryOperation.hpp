@@ -1,49 +1,6 @@
 #pragma once
-#include <sstream>
+#include "Operation.hpp"
 
-template <class T>
-class Value;
-
-template <class T>
-class Operation {
-public:
-    virtual T evaluate() = 0;
-    virtual std::string getDescription() = 0;
-    virtual std::string stringify() = 0;
-};
-
-template <class T>
-class Evaluation: public Operation<T> {
-private:
-    Value<T> inputVar;
-public:
-    Evaluation(Value<T> inputVar)
-    : inputVar(inputVar) {};
-    virtual T evaluate() {
-        return inputVar.getValue();
-    };
-    virtual std::string getDescription() {
-        return "Returns the latest value of the inputted variable";
-    };
-    virtual std::string stringify() {
-        std::ostringstream oss;
-        oss << inputVar.getValue();
-        return oss.str();
-    };
-};
-
-template <class T, class U>
-class UnaryOperation: public Operation<T> {
-private:
-    std::shared_ptr<Operation<U>> inputOp = nullptr;
-public:
-    UnaryOperation(std::shared_ptr<Operation<U>> inputOp)
-    : inputOp(inputOp) {};
-    virtual T evaluate() {
-        return evaluate(inputOp->evaluate());
-    };
-    virtual T evaluate(U input) = 0;
-};
 
 template <class T, class U, class V>
 class BinaryOperation: public Operation<T>  {
@@ -67,12 +24,12 @@ public:
         inputOp2 = std::make_shared<Evaluation<V>>(inputVar2);
     };
 
-    virtual std::string stringify() {
+    virtual std::string stringify() const {
         std::ostringstream oss;
         oss << inputOp1->evaluate() << stringifyOperator() << inputOp2->evaluate();
         return oss.str();
     };
-    virtual std::string stringifyOperator() = 0;
+    virtual std::string stringifyOperator() const = 0;
 
     T evaluate() {
         return evaluate(inputOp1->evaluate(), inputOp2->evaluate());
@@ -87,25 +44,25 @@ public:
     virtual T evaluate(T x, T y) {
         return x + y;
     };
-    virtual std::string getDescription() {
+    virtual std::string getDescription() const {
         return "Returns the sum of two inputted variables";
     };
-    virtual std::string stringifyOperator() {
+    virtual std::string stringifyOperator() const {
         return "+";
     };
 };
 
-template <class T>
-class Multiplication: public BinaryOperation<T, T, T> {
+template <class T, class U>
+class Multiplication: public BinaryOperation<T, T, U> {
 public:
-    using BinaryOperation<T,T,T>::BinaryOperation;
-    virtual T evaluate(T x, T y) {
+    using BinaryOperation<T,T,U>::BinaryOperation;
+    virtual T evaluate(T x, U y) {
         return x*y;
     };
-    virtual std::string getDescription() {
+    virtual std::string getDescription() const {
         return "Returns the multiplication of two inputted variables";
     };
-    virtual std::string stringifyOperator() {
+    virtual std::string stringifyOperator() const {
         return "*";
     };
 };
