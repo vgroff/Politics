@@ -30,35 +30,44 @@ private:
     std::string name;
     Variable<T>* parentVariable = nullptr;
     T value;
-    std::shared_ptr<std::pair<T, T>> bounds = nullptr;
+    std::shared_ptr<T> lowerBound = nullptr;
+    std::shared_ptr<T> upperBound = nullptr;
 public:
-    Value(std::string name, T defaultValue)
-    : name(name), value(defaultValue) {};
-    Value(std::string name, T defaultValue, Variable<T>* parentVariable)
-    : name(name), value(defaultValue), parentVariable(parentVariable) {};
-    Value(std::string name, T defaultValue, std::pair<T,T> bounds_)
-    : name(name), value(defaultValue) {
-        if (bounds_.second <= bounds_.first) {
+    Value(std::string name, T value)
+    : name(name), value(value) {};
+    Value(std::string name, T value, Variable<T>* parentVariable)
+    : name(name), value(value), parentVariable(parentVariable) {};
+    Value(std::string name, T value, std::pair<T,T> bounds_, bool softSetOnInit = false, Variable<T>* parentVariable = nullptr)
+    : name(name), parentVariable(parentVariable) {
+        if (!exceedsLowerBound(bounds_.second, bounds_.first) || !exceedsUpperBound(bounds_.first, bounds_.second)) {
             throw MalformedBoundsException();
         }
-        bounds = std::shared_ptr<std::pair<T,T>>(bounds_);
-    };
-    Value(std::string name, T defaultValue, std::pair<T,T> bounds_, Variable<T>* parentVariable)
-    : name(name), value(defaultValue), parentVariable(parentVariable) {
-        if (bounds_.second <= bounds_.first) {
-            throw MalformedBoundsException();
-        }
-        bounds = std::shared_ptr<std::pair<T,T>>(bounds_);
-    };
-    Value(std::string name, T defaultValue, std::shared_ptr<std::pair<T,T>> bounds_, Variable<T>* parentVariable)
-    : name(name), value(defaultValue), parentVariable(parentVariable) {
-        if (bounds_ != nullptr) {
-            if (bounds_->second <= bounds_->first) {
-                throw MalformedBoundsException();
-            }
-            bounds = bounds_;
+        upperBound = std::make_shared<T>(bounds_.second);
+        lowerBound = std::make_shared<T>(bounds_.first);
+        if (softSetOnInit) {
+            softSetValue(value);
+        } else {
+            setValue(value);
         }
     };
+    Value(std::string name, T defaultValue, T lowerBound, Variable<T>* parentVariable, bool softSetOnInit = false)
+    : name(name), value(defaultValue), parentVariable(parentVariable) {
+        lowerBound = std::make_shared<T>(lowerBound);
+        if (softSetOnInit) {
+            softSetValue(value);
+        } else {
+            setValue(value);
+        }
+    };
+    // Value(std::string name, T defaultValue, std::shared_ptr<std::pair<T,T>> bounds_, Variable<T>* parentVariable)
+    // : name(name), value(defaultValue), parentVariable(parentVariable) {
+    //     if (bounds_ != nullptr) {
+    //         if (bounds_->second <= bounds_->first) {
+    //             throw MalformedBoundsException();
+    //         }
+    //         bounds = bounds_;
+    //     }
+    // };
     std::string getName() const {
         return name;
     };
@@ -69,16 +78,20 @@ public:
         return value;
     };
     void setValue(T newValue) {
-        if (bounds && exceedsBounds<T>(newValue, *bounds)) {
+        if (upperBound && exceedsHigherBound<T>(newValue, *upperBound)) {
             throw SettingOutOfBounds();
+        } else if (lowerBound && exceedsLowerBound<T>(newValue, *lowerBound)) {
+            throw SettingOutOfBounds();
+        } else {
+            value = newValue;
         }
         value = newValue;
     };
     void softSetValue(T newValue) {
-        if (bounds && exceedsHigherBound<T>(newValue, bounds->second)) {
-            newValue = bounds->second;
-        } else if (bounds && exceedsLowerBound<T>(newValue, bounds->first)) {
-            newValue = bounds->first;
+        if (upperBound && exceedsHigherBound<T>(newValue, *upperBound)) {
+            newValue = *bounds;
+        } else if (lowerBound && exceedsLowerBound<T>(newValue, *lowerBound)) {
+            newValue = *bounds;
         } else {
             value = newValue;
         }

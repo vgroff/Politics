@@ -109,13 +109,13 @@ public:
 };
 
 // Still to do:
-// - Need to be able to set only a lower bound for variables like population
+// - Have activating modifiers - need boolean operations
 // - Convert existing code to using Variables!!! Have a big init method that sets everything up then
 //      - We'll want to calculate some values in order rather than having them rely on potentially old values
 //         which begs the question of when exactly values should update - on command, or on the clock?
 //          On the clock might be "nicer" since it is automatic, we just need to subscribe those objects to the clock at the correct time
 //          which just means creating them at the correct time on init
-// - Hyseresis modifiers! Easy or not? Could just be done through intermediary variables but might be ugly?
+// - Hysteresis modifiers! Easy or not? Could just be done through intermediary variables but might be ugly? Otherwise hysteresis on the value itself shouldn't be too hard
 // - Functional variables ?
 // - Need a ModificationPriority since some modifiers may return varied outputs
 // - Hysteresis variables that grow and fall differently

@@ -37,6 +37,22 @@ public:
     virtual T evaluate(U x, V y) = 0;
 };
 
+template <bool B, class T>
+class Equality: public BinaryOperation<bool, T, T> {
+public:
+    using BinaryOperation<bool,T,T>::BinaryOperation;
+    virtual bool evaluate(T x, T y) {
+        return x == y;
+    };
+    virtual std::string getDescription() const {
+        return "Returns whether two objects are equal";
+    };
+    virtual std::string stringifyOperator() const {
+        return "==";
+    };
+};
+
+
 template <class T>
 class Addition: public BinaryOperation<T, T, T> {
 public:
