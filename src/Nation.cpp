@@ -324,25 +324,25 @@ bool Nation::atFullEmployement() {
     return false;
 }
 
-// void Nation::setupVars() {
-//     setupResearch();
-// }
+void Nation::setupVars() {
+    setupResearch();
+}
 
-// void Nation::setupResearch() {
-//     double productivityDiff = (researchProps.research - privateIndustry.getProductivity())/researchProps.research;
-//     researchProps.research = researchProps.research*(1 + 0.01*MONTHS_PER_TURN/12 + 0.015*std::pow(productivityDiff, 2)*MONTHS_PER_TURN/12);
+void Nation::setupResearch() {
+    double productivityDiff = (researchProps.research - privateIndustry.getProductivity())/researchProps.research;
+    researchProps.research = researchProps.research*(1 + 0.01*MONTHS_PER_TURN/12 + 0.015*std::pow(productivityDiff, 2)*MONTHS_PER_TURN/12);
 
-//     std::function<std::shared_ptr<Multiplication<double>>(Value<double>)> getModif = [this](Value<double> researchVar) {
-//         auto latestResearch = researchProps.researchVar.getLatest();
-//         auto productivityVar = privateIndustry.getProductivity();
-//         auto monthsPerTurn = world->getWeeksPerTurn();
-//         auto increase = Value<double>(std::string("increase in research"), 0.1);
-//         return std::make_shared<Multiplication<double>>(researchVar, addition);
-//     };
-//     auto modifier = std::make_shared<MultiplicativeModifier<double>>(std::string("Modifier for research"), getModif);
-//     researchProps.researchVar.addModifier(modifier);
-//     researchProps.researchVar.calculate(true);
-// }
+    std::function<std::shared_ptr<Multiplication<double>>(Value<double>)> getModif = [this](Value<double> researchVar) {
+        auto latestResearch = researchProps.researchVar.getLatest();
+        auto productivityVar = privateIndustry.getProductivity();
+        auto monthsPerTurn = world->getWeeksPerTurn();
+        auto increase = Value<double>(std::string("increase in research"), 0.1);
+        return std::make_shared<Multiplication<double>>(researchVar, addition);
+    };
+    auto modifier = std::make_shared<MultiplicativeModifier<double>>(std::string("Modifier for research"), getModif);
+    researchProps.researchVar.addModifier(modifier);
+    researchProps.researchVar.calculate(true);
+}
 
 Nation Nation::testSetupSingleNation(std::weak_ptr<Clock>  clock) {
     PopulationProperties props {
