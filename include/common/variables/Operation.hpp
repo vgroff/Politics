@@ -15,19 +15,19 @@ public:
 template <class T>
 class Evaluation: public Operation<T> {
 private:
-    Value<T> inputVar;
+    Value<T> inputVal;
 public:
-    Evaluation(Value<T> inputVar)
-    : inputVar(inputVar) {};
+    Evaluation(Value<T> inputVal)
+    : inputVal(inputVal) {};
     virtual T evaluate() {
-        return inputVar.getValue();
+        return inputVal.getValue();
     };
     virtual std::string getDescription() const {
         return "Returns the latest value of the inputted variable";
     };
     virtual std::string stringify() const {
         std::ostringstream oss;
-        oss << inputVar.getValue();
+        oss << inputVal.getValue();
         return oss.str();
     };
 };

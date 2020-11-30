@@ -80,6 +80,9 @@ private:
     void capitalistsInvest();
     void politicsTurn();
     void runIndustryTurn();
+
+    void setupVars();
+    void setupResearch();
 public:
     Nation(std::weak_ptr<Clock> clock,
            std::string name, 

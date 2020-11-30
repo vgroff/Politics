@@ -89,9 +89,9 @@ public:
     };
     void softSetValue(T newValue) {
         if (upperBound && exceedsHigherBound<T>(newValue, *upperBound)) {
-            newValue = *bounds;
+            newValue = *upperBound;
         } else if (lowerBound && exceedsLowerBound<T>(newValue, *lowerBound)) {
-            newValue = *bounds;
+            newValue = *lowerBound;
         } else {
             value = newValue;
         }

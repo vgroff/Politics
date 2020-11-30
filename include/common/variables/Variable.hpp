@@ -64,21 +64,20 @@ public:
     };
 };
 
+
 template <class T>
 class HysteresisVariable: public Variable<T> {
 public: 
-    Variable<T> targetVariable;
-    Variable<double> growthRateVar;
-    std::vector<std::shared_ptr<Modifier<T>>> currentValueModifiers = {};
-    std::vector<std::shared_ptr<Modifier<T>>> growthRateModifiers = {};
+    Variable<T> target;
+    Variable<double> changeRate;
 
     HysteresisVariable(std::string name, 
             T defaultValue, 
             std::weak_ptr<Clock> clock,
             size_t trackingRateDays = 0)
     : Variable<T>(name, defaultValue, clock, trackingRateDays),
-    targetVariable("Target variables of " + name, defaultValue, std::weak_ptr<Clock>(), trackingRateDays),
-    growthRateVar("Growth rate of " + name, 0, std::weak_ptr<Clock>(), {0, 1}, trackingRateDays)
+    target("Target variables of " + name, defaultValue, std::weak_ptr<Clock>(), trackingRateDays),
+    changeRate("Growth rate of " + name, 0, std::weak_ptr<Clock>(), {0, 1}, trackingRateDays)
     {};
 
     HysteresisVariable(std::string name, 
@@ -87,19 +86,23 @@ public:
             std::pair<T,T> bounds_, 
             size_t trackingRateDays = 0)
     : Variable<T>(name, defaultValue, clock, bounds_, trackingRateDays),
-    targetVariable("Target variables of " + name, defaultValue, std::weak_ptr<Clock>(), bounds_, trackingRateDays),
-    growthRateVar("Growth rate of " + name, 0, std::weak_ptr<Clock>(), {0, 1}, trackingRateDays)
+    target("Target variables of " + name, defaultValue, std::weak_ptr<Clock>(), bounds_, trackingRateDays),
+    changeRate("Growth rate of " + name, 0, std::weak_ptr<Clock>(), {0, 1}, trackingRateDays)
     {};
 
     Calculation<T> calculate(bool setLatest) {
         auto currentVar = Variable<T>::calculate(setLatest);
         if (setLatest) {
-            currentValueModifiers = {};
+            this->baseValueModifiers = {};
         }
-        targetVariable.calculate(setLatest);
-        auto growthRateCalc = growthRateVar.calculate(setLatest);
+        auto targetCalc = target.calculate(setLatest);
+        auto growthRateCalc = changeRate.calculate(setLatest);
+        Value<double> targetValue("Calculated target value of " + this->name, currentVar->getResult(), this);
         Value<double> currentValue("Calculated current value of " + this->name, currentVar->getResult(), this);
-        auto newValue = std::make_shared<Multiplication<double, T>>(growthRateVar, currentValue);
+        Value<double> growthRate("Calculated change rate of " + this->name, currentVar->getResult(), this);
+        auto oldValueModified = std::make_shared<Multiplication<T, double>>(currentValue, changeRate);
+        auto targetValueModified = std::make_shared<Multiplication<T, double>>(currentValue, 1 - changeRate);
+        auto newValue = std::make_shared<Addition<T>>(oldValueModified, targetValueModified);
         Calculation<T> calculation("Value of " + this->name + " including growth", {newValue});
         if (setLatest) {
             currentValue.softSetValue(calculation.getResult());
@@ -107,9 +110,21 @@ public:
         return calculation;
     }
 };
+// Have:
+// - Change variables, where each time var += change and change is it's own variable. Use get latest here
+//      - what if we want target in hysteresis to be a changeVariable
+// - How is changing variable not just a variable with a linear modifier? It basically is that but its nicely wrapped up?
+// - Hysteresis variables, where each time var = rate*old_var + (1-rate)*new_var
 
 // Still to do:
 // - Have activating modifiers - need boolean operations
+// - Values/Modifiers in variables do they change on a per turn basis, e.g. does +0.1 mean +0.1 per turn or forever?
+// - Are hysteresis variables what we want them to be?
+//      - use cases: increasing GDP/research - use target variable, growth is dependent on it
+//      - equalising ideology: use tagret variable and ahve some custom growht thign
+//             - basically none of these require this weird multiplication thing,
+//             - shouldn't growthRateVar just straight output the result? But then its not really a growth rate
+//      - have different kinds of growth - average to target, growth etc.. be functions that get passed in
 // - Convert existing code to using Variables!!! Have a big init method that sets everything up then
 //      - We'll want to calculate some values in order rather than having them rely on potentially old values
 //         which begs the question of when exactly values should update - on command, or on the clock?
